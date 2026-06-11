@@ -21,32 +21,13 @@
         html, body, #root { height: 100%; overflow: hidden; }
         ::-webkit-scrollbar { display: none; }
 
-        .text-gold {
-            background: linear-gradient(to bottom right, #e6c27a 0%, #ffd700 25%, #b8860b 50%, #ffd700 75%, #e6c27a 100%);
-            -webkit-background-clip: text; background-clip: text; color: transparent;
-        }
-
+        .text-gold { background: linear-gradient(to bottom right, #e6c27a 0%, #ffd700 25%, #b8860b 50%, #ffd700 75%, #e6c27a 100%); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: 0px 4px 15px rgba(218, 165, 32, 0.3); }
         .bg-gold { background: linear-gradient(135deg, #d4af37 0%, #fffacd 50%, #daa520 100%); }
-
-        .glass-panel {
-            background: rgba(24, 24, 27, 0.75);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(218, 165, 32, 0.2);
-        }
+        .glass-panel { background: rgba(24, 24, 27, 0.75); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(218, 165, 32, 0.2); }
 
         /* Ô CHỜ NHẬP CHỮ - LÀM SÁNG RỰC RỠ */
-        .slot-waiting {
-            background: rgba(63, 63, 70, 0.4);
-            border: 2px solid #b8860b;
-            box-shadow: 0 0 10px rgba(184, 134, 11, 0.4);
-        }
-        .slot-filled {
-            background: linear-gradient(to bottom, #52525b, #27272a);
-            border: 2px solid #ffd700;
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
-            color: #ffd700;
-        }
+        .slot-waiting { background: rgba(63, 63, 70, 0.4); border: 2px solid #b8860b; box-shadow: 0 0 10px rgba(184, 134, 11, 0.4); }
+        .slot-filled { background: linear-gradient(to bottom, #52525b, #27272a); border: 2px solid #ffd700; box-shadow: 0 0 15px rgba(255, 215, 0, 0.5); color: #ffd700; }
 
         .shine-effect { position: relative; overflow: hidden; }
         .shine-effect::after { content: ''; position: absolute; top: -50%; left: -50%; width: 50px; height: 200%; background: rgba(255, 255, 255, 0.3); transform: rotate(45deg); animation: shine 4s infinite; }
@@ -67,133 +48,151 @@
             click: new Audio('./sounds/click.mp3'),
             wrong: new Audio('./sounds/wrong.mp3'),
             win: new Audio('./sounds/win.mp3'),
-            coin: new Audio('./sounds/coin.mp3')
+            coin: new Audio('./sounds/coin.mp3'),
+            seasonWin: new Audio('./sounds/season_win.mp3')
         };
         const playSound = (type) => { try { sfx[type].currentTime = 0; sfx[type].play().catch(() => {}); } catch (e) {} };
 
-        // --- FULL DATABASE 100 CÂU HỎI (CÂU 28 ĐỔI THÀNH ĐÈN LỒNG) ---
+        // --- FULL 100 CÂU HỎI & 100 CÂU GỢI Ý ĐỘC QUYỀN ---
         const OFFLINE_DB = [
-            { id: 1, topic: "DÂN CA VIỆT NAM", question: "Bài hát nào có chú ngựa đứng cạnh chiếc ô?", answer: "NGUA O", p: "Gợi ý: Ngựa...?" },
-            { id: 2, topic: "THỂ THAO", question: "Quả gì mà lại nằm trên bàn thế này?", answer: "BONG BAN", p: "Gợi ý: Trắng tròn, đánh bằng vợt gỗ." },
-            { id: 3, topic: "DANH HIỆU SẮC ĐẸP", question: "Tên gọi của người thắng cuộc thi nhan sắc?", answer: "HOA HAU", p: "Gợi ý: Đội vương miện." },
-            { id: 4, topic: "CÔNG SỞ", question: "Việc bạn phải làm vào cuối mỗi tháng?", answer: "BAO CAO", p: "Gợi ý: Viết cho sếp xem." },
-            { id: 5, topic: "ĐỜI SỐNG", question: "Thứ thường giăng đầy góc tường cũ?", answer: "MANG NHEN", p: "Gợi ý: Do nhện dệt." },
-            { id: 6, topic: "ĐỜI SỐNG", question: "Vật dụng đo đếm thời gian?", answer: "DONG HO", p: "Gợi ý: Tích tắc..." },
-            { id: 7, topic: "ĐỜI SỐNG", question: "Đồ dùng khi bạn tắm gội?", answer: "XA PHONG", p: "Gợi ý: Tạo nhiều bọt trắng." },
-            { id: 8, topic: "THỰC VẬT", question: "Ngũ cốc kết hợp rau ăn lá?", answer: "BAP CAI", p: "Gợi ý: Bắp + Cải." },
-            { id: 9, topic: "THỂ THAO", question: "Môn dùng vợt và cầu lông vũ?", answer: "CAU LONG", p: "Gợi ý: Đánh qua lưới cao." },
-            { id: 10, topic: "ĐỜI SỐNG", question: "Trang phục mặc khi trời mưa?", answer: "AO MUA", p: "Gợi ý: Không sợ ướt áo." },
-            { id: 11, topic: "CƠ KHÍ", question: "Bánh tròn có răng truyền động?", answer: "BANH RANG", p: "Gợi ý: Máy móc cần có nó." },
-            { id: 12, topic: "GIA VỊ", question: "Hạt nhỏ vị cay nồng rắc lên món ăn?", answer: "HAT TIEU", p: "Gợi ý: Tiêu...?" },
-            { id: 13, topic: "THỰC PHẨM", question: "Tên chung các loại quả ăn được?", answer: "TRAI CAY", p: "Gợi ý: Có nhiều vitamin." },
-            { id: 14, topic: "ĐỜI SỐNG", question: "Giấy mỏng bọc thực phẩm nướng?", answer: "GIAY BAC", p: "Gợi ý: Màu sáng lấp lánh." },
-            { id: 15, topic: "MAY VÁ", question: "Bộ đôi khâu vá quần áo?", answer: "KIM CHI", p: "Gợi ý: Kim và...?" },
-            { id: 16, topic: "CHÍNH TRỊ", question: "Hoạt động giành vị trí lãnh đạo?", answer: "TRANH CU", p: "Gợi ý: Bầu cử, tranh tài." },
-            { id: 17, topic: "BẢO HỘ", question: "Vật đeo tay giữ ấm hoặc bảo vệ?", answer: "BAO TAY" },
-            { id: 18, topic: "THỂ THAO", question: "Giày có gai nhọn của cầu thủ bóng đá?", answer: "GIAY DINH" },
-            { id: 19, topic: "GIẢI PHẪU", question: "Bộ phận lồi ra ở cổ chân?", answer: "MAT CA" },
-            { id: 20, topic: "ĐỜI SỐNG", question: "Trạng thái bình yên, không lo âu?", answer: "YEN BINH" },
-            { id: 21, topic: "ĐỜI SỐNG", question: "Hành động cố tình gây đau đớn người khác?", answer: "HANH HA" },
-            { id: 22, topic: "Ý TƯỞNG", question: "Giải pháp vô cùng thông minh?", answer: "CAO KIEN" },
-            { id: 23, topic: "CÔNG SỞ", question: "Lời chào khi xin phép ra về?", answer: "CAO TU" },
-            { id: 24, topic: "GIẢI PHẪU", question: "Xương bao quanh lồng ngực?", answer: "MANG SUON" },
-            { id: 25, topic: "KIẾN TRÚC", question: "Nơi trong phòng đón ánh sáng?", answer: "CUA SO" },
-            { id: 26, topic: "NGHỀ NGHIỆP", question: "Sáng tạo bản vẽ hình dáng sản phẩm?", answer: "THIET KE" },
-            { id: 27, topic: "ĐỜI SỐNG", question: "Lối sống tuân thủ nề nếp?", answer: "QUY CU" },
-            { id: 28, topic: "ĐÈN", question: "Vật dụng thắp sáng bằng nến thời xưa?", answer: "DEN LONG" }, // Đổi theo yêu cầu
-            { id: 29, topic: "TÍNH CÁCH", question: "Vẻ ngoài chải chuốt quá mức?", answer: "BONG BAY" },
-            { id: 30, topic: "THÀNH NGỮ", question: "Hệ thống pháp luật vô hình?", answer: "LUOI TROI" },
-            { id: 31, topic: "THÀNH NGỮ", question: "Khuyên bảo kẻ bảo thủ?", answer: "DAN GAY TAI TRAU" },
-            { id: 32, topic: "THÀNH NGỮ", question: "Thương xót giả tạo?", answer: "NUOC MAT CA SAU" },
-            { id: 33, topic: "THÀNH NGỮ", question: "Hãm hại người khác lén lút?", answer: "NEM DA GIAU TAY" },
-            { id: 34, topic: "THÀNH NGỮ", question: "Mưu hại người tự hại mình?", answer: "GAY ONG DAP LUNG ONG" },
-            { id: 35, topic: "THÀNH NGỮ", question: "Lợi dụng lúc lộn xộn trục lợi?", answer: "DUC NUOC BEO CO" },
-            { id: 36, topic: "TỪ LÓNG", question: "Sắp phải đối mặt nguy cơ bị xử lý?", answer: "LEN THOT" },
-            { id: 37, topic: "THÀNH NGỮ", question: "Viết xuống không thể rút lại?", answer: "BUT SA GA CHET" },
-            { id: 38, topic: "TÍNH CÁCH", question: "Sống phũ phàng quên ơn nghĩa?", answer: "BAC BEO" },
-            { id: 39, topic: "THỰC VẬT", question: "Quả có vị đắng đặc trưng?", answer: "KHO QUA" },
-            { id: 40, topic: "TÌNH CẢM", question: "Nơi trải qua nhiều mối tình?", answer: "TINH TRUONG" },
-            { id: 41, topic: "TÍNH CÁCH", question: "Thật tâm chân thành?", answer: "CHAN THANH" },
-            { id: 42, topic: "TÍNH CÁCH", question: "Cư xử đàng hoàng?", answer: "DUNG DAN" },
-            { id: 43, topic: "NGHỆ THUẬT", question: "Kịch dùng tiếng cười phê phán?", answer: "HAI KICH" },
-            { id: 44, topic: "KIẾN TRÚC", question: "Nhà vệ sinh ngày xưa?", answer: "CAU TIEU" },
-            { id: 45, topic: "ĐỜI SỐNG", question: "Tiếng rên rỉ khổ tâm?", answer: "THAN KHOC" },
-            { id: 46, topic: "GIẢI PHẪU", question: "Tâm tư ẩn sâu con người?", answer: "LONG DA" },
-            { id: 47, topic: "THÀNH NGỮ", question: "Lời ngon ngọt chứa bẫy?", answer: "MAT NGOT CHET RUOI" },
-            { id: 48, topic: "CẢM XÚC", question: "Bên trong trống trơn không kiến thức?", answer: "TRONG RONG" },
-            { id: 49, topic: "THÀNH NGỮ", question: "Kẻ thay đổi lập trường theo hướng lợi?", answer: "GIO CHIEU NAO CHE CHIEU AY" },
-            { id: 50, topic: "THÀNH NGỮ", question: "Hạng người không đàng hoàng?", answer: "MEO MA GA DONG" },
-            { id: 51, topic: "Ý THỨC", question: "Hiểu biết qua học hành?", answer: "KIEN THUC" },
-            { id: 52, topic: "TÌNH CẢM", question: "Yêu hai người một lúc?", answer: "BAT CA HAI TAY" },
-            { id: 53, topic: "SINH HỌC", question: "Nơi ghi danh động vật quý hiếm?", answer: "SACH DO" },
-            { id: 54, topic: "NHẠC CỤ", question: "Nhạc cụ dân tộc có 1 dây?", answer: "DAN BAU" },
-            { id: 55, topic: "CẢM XÚC", question: "Bàng hoàng trước tin tức?", answer: "CU SOC" },
-            { id: 56, topic: "KIẾN TRÚC", question: "Nơi chôn cất người đã khuất?", answer: "NAM MO" },
-            { id: 57, topic: "HÀNH CHÍNH", question: "Tự nguyện trình diện công an?", answer: "DAU THU" },
-            { id: 58, topic: "GIẢI PHẪU", question: "Tóc mảnh hai bên thái dương?", answer: "TOC MAI" },
-            { id: 59, topic: "THÀNH NGỮ", question: "Miệng từ bi lòng độc ác?", answer: "KHAU PHAT TAM XA" },
-            { id: 60, topic: "THÀNH NGỮ", question: "Ít hiểu biết hay khoe khoang?", answer: "THUNG RONG KEU TO" },
-            { id: 61, topic: "THÀNH NGỮ", question: "Cách nói ẩn ý châm chọc?", answer: "BONG GIO" },
-            { id: 62, topic: "Y HỌC", question: "Kính dành cho người khó nhìn xa?", answer: "KINH CAN" },
-            { id: 63, topic: "TỪ LÓNG", question: "Thay đổi thái độ nhanh chóng?", answer: "LAT MAT" },
-            { id: 64, topic: "ẨM THỰC", question: "Món làm từ đá nhuyễn mùa hè?", answer: "DA BAO" },
-            { id: 65, topic: "TỪ LÓNG", question: "Ví tiền trống rỗng?", answer: "CHAY TUI" },
-            { id: 66, topic: "TỪ LÓNG", question: "Kẻ côn đồ hung hãn?", answer: "DAU GAU" },
-            { id: 67, topic: "TỪ LÓNG", question: "Thanh niên nông nổi?", answer: "TRE TRAU" },
-            { id: 68, topic: "TỪ LÓNG", question: "Gen Z than vãn khi xui?", answer: "XU CA NA" },
-            { id: 69, topic: "TỪ LÓNG", question: "Hoang mang không an tâm?", answer: "BAT ON" },
-            { id: 70, topic: "TỪ LÓNG", question: "Kẻ chuyên gây họa?", answer: "BAO THU" },
-            { id: 71, topic: "ẨM THỰC", question: "Món ăn drama chấn động?", answer: "LONG XAO DUA" },
-            { id: 72, topic: "TỪ LÓNG", question: "Hành động lạnh nhạt?", answer: "CAM LANH" },
-            { id: 73, topic: "TỪ LÓNG", question: "Tình huống rắc rối xoắn não?", answer: "GAY LU" },
-            { id: 74, topic: "TÀI NGUYÊN", question: "Nhiên liệu hóa thạch quý?", answer: "DAU MO" },
-            { id: 75, topic: "TÌNH CẢM", question: "Người tình định mệnh?", answer: "CHAN AI" },
-            { id: 76, topic: "TỪ LÓNG", question: "Gánh vác đưa đội chiến thắng?", answer: "GANH TEAM" },
-            { id: 77, topic: "TỪ LÓNG", question: "Hot trend múa võ?", answer: "DI DUONG QUYEN" },
-            { id: 78, topic: "TỪ LÓNG", question: "Tìm người yêu trên app?", answer: "QUET TINDER" },
-            { id: 79, topic: "TỪ LÓNG", question: "Quay ngoắt hủy quyết định?", answer: "QUAY XE" },
-            { id: 80, topic: "TỪ LÓNG", question: "Bị người khác vùi dập?", answer: "AN HANH" },
-            { id: 81, topic: "KINH TẾ", question: "Đẩy giá ảo tưởng?", answer: "NGAO GIA" },
-            { id: 82, topic: "KINH TẾ", question: "Thổi phồng bất động sản?", answer: "THOI GIA" },
-            { id: 83, topic: "TÌNH CẢM", question: "Phản bội người yêu?", answer: "CAM SUNG" },
-            { id: 84, topic: "TÌNH CẢM", question: "Nỗi đau gánh vác hậu quả?", answer: "DO VO" },
-            { id: 85, topic: "ĐẦU TƯ", question: "Mua tiền ảo giá đỉnh?", answer: "DU DINH" },
-            { id: 86, topic: "ĐẦU TƯ", question: "Mua đúng giá thấp nhất?", answer: "BAT DAY" },
-            { id: 87, topic: "TỪ LÓNG", question: "Lừa người thiếu kinh nghiệm?", answer: "LUA GA" },
-            { id: 88, topic: "TỪ LÓNG", question: "Xả tài sản lên đầu người khác?", answer: "UP BO" },
-            { id: 89, topic: "Y HỌC", question: "Bệnh tâm lý trầm uất?", answer: "TRAM CAM" },
-            { id: 90, topic: "TỪ LÓNG", question: "Khen hành động dũng cảm?", answer: "HAO HAN" },
-            { id: 91, topic: "TỪ LÓNG", question: "Vị trí tồi tệ phân tầng?", answer: "DAY XA HOI" },
-            { id: 92, topic: "KIẾN TRÚC", question: "Nơi hoàn toàn khuất sáng?", answer: "BONG TOI" },
-            { id: 93, topic: "TRIẾT HỌC", question: "Sự thật luôn đúng?", answer: "CHAN LY" },
-            { id: 94, topic: "TỪ LÓNG", question: "Người thức xuyên đêm?", answer: "CU DEM" },
-            { id: 95, topic: "TỪ LÓNG", question: "Hot trend phát ngôn vô tri?", answer: "XA LER" },
-            { id: 96, topic: "TỪ LÓNG", question: "Hành động làm quá lố?", answer: "O DE" },
-            { id: 97, topic: "TỪ LÓNG", question: "Khen món ăn ngon?", answer: "MLEM" },
-            { id: 98, topic: "TỪ LÓNG", question: "Hành động phá phách?", answer: "BAO DOI" },
-            { id: 99, topic: "QUANG HỌC", question: "Tia sáng dội ngược lại?", answer: "PHAN QUANG" },
-            { id: 100, topic: "CẢNH GIỚI", question: "Chất lượng đồ họa game?", answer: "DANG CAP" }
+            { id: 1, topic: "DÂN CA VIỆT NAM", question: "Bài hát nào có chú ngựa đứng cạnh chiếc ô?", answer: "NGUA O", hint: "Bài hát dân ca miền Nam bắt đầu bằng 'Khớp con...'" },
+            { id: 2, topic: "THỂ THAO", question: "Quả gì mà lại nằm trên bàn thế này?", answer: "BONG BAN", hint: "Môn thể thao đánh qua lưới trên một cái mặt phẳng." },
+            { id: 3, topic: "DANH HIỆU SẮC ĐẸP", question: "Tên gọi của người thắng cuộc thi nhan sắc?", answer: "HOA HAU", hint: "Người đẹp nhất sẽ được đội vương miện." },
+            { id: 4, topic: "CÔNG SỞ", question: "Việc bạn phải làm vào cuối mỗi tháng?", answer: "BAO CAO", hint: "Văn bản tổng kết công việc gửi cho sếp." },
+            { id: 5, topic: "ĐỜI SỐNG", question: "Thứ thường giăng đầy góc tường cũ?", answer: "MANG NHEN", hint: "Loài vật 8 chân nhả tơ tạo ra thứ này." },
+            { id: 6, topic: "ĐỜI SỐNG", question: "Vật dụng đo đếm thời gian?", answer: "DONG HO", hint: "Vật có kim chỉ giờ, phút, giây." },
+            { id: 7, topic: "ĐỜI SỐNG", question: "Đồ dùng khi bạn tắm gội?", answer: "XA PHONG", hint: "Cục tạo ra nhiều bọt trắng để làm sạch." },
+            { id: 8, topic: "THỰC VẬT", question: "Ngũ cốc kết hợp rau ăn lá?", answer: "BAP CAI", hint: "Ghép chữ Bắp (ngô) và Rau Cải." },
+            { id: 9, topic: "THỂ THAO", question: "Môn dùng vợt và cầu lông vũ?", answer: "CAU LONG", hint: "Đánh quả cầu có cắm lông vũ qua lưới." },
+            { id: 10, topic: "ĐỜI SỐNG", question: "Trang phục mặc khi trời mưa?", answer: "AO MUA", hint: "Giúp bạn không bị ướt khi đi ngoài đường." },
+            { id: 11, topic: "CƠ KHÍ", question: "Bánh tròn có răng truyền động?", answer: "BANH RANG", hint: "Chi tiết máy móc hình tròn có nhiều răng cưa." },
+            { id: 12, topic: "GIA VỊ", question: "Hạt nhỏ vị cay nồng rắc lên món ăn?", answer: "HAT TIEU", hint: "Gia vị màu đen, xay nhuyễn ăn rất thơm." },
+            { id: 13, topic: "THỰC PHẨM", question: "Tên chung các loại quả ăn được?", answer: "TRAI CAY", hint: "Cam, táo, xoài, ổi gọi chung là gì?" },
+            { id: 14, topic: "ĐỜI SỐNG", question: "Giấy mỏng bọc thực phẩm nướng?", answer: "GIAY BAC", hint: "Cuộn giấy kim loại màu sáng lấp lánh." },
+            { id: 15, topic: "MAY VÁ", question: "Bộ đôi khâu vá quần áo?", answer: "KIM CHI", hint: "Thứ để xâu sợi dây vào và may vá." },
+            { id: 16, topic: "CHÍNH TRỊ", question: "Hoạt động giành vị trí lãnh đạo?", answer: "TRANH CU", hint: "Cạnh tranh để được bầu làm Tổng thống." },
+            { id: 17, topic: "BẢO HỘ", question: "Vật đeo tay giữ ấm hoặc bảo vệ?", answer: "BAO TAY", hint: "Vật xỏ vào 5 ngón tay." },
+            { id: 18, topic: "THỂ THAO", question: "Giày có gai nhọn của cầu thủ bóng đá?", answer: "GIAY DINH", hint: "Dưới đế có nhiều mấu nhọn để bám cỏ." },
+            { id: 19, topic: "GIẢI PHẪU", question: "Tên một bộ phận lồi ra ở cổ chân?", answer: "MAT CA", hint: "Cục xương nhô ra ở hai bên cổ chân." },
+            { id: 20, topic: "ĐỜI SỐNG", question: "Trạng thái bình yên, không lo âu?", answer: "YEN BINH", hint: "Bầu không khí tĩnh lặng, thanh bình." },
+            { id: 21, topic: "ĐỜI SỐNG", question: "Hành động cố tình gây đau đớn người khác?", answer: "HANH HA", hint: "Làm tình làm tội, tra tấn tinh thần/thể xác." },
+            { id: 22, topic: "Ý TƯỞNG", question: "Giải pháp vô cùng thông minh?", answer: "CAO KIEN", hint: "Một ý kiến xuất sắc, sáng suốt." },
+            { id: 23, topic: "CÔNG SỞ", question: "Lời chào khi xin phép ra về?", answer: "CAO TU", hint: "Cách nói lịch sự khi tạm biệt để đi về." },
+            { id: 24, topic: "GIẢI PHẪU", question: "Xương bao quanh lồng ngực?", answer: "MANG SUON", hint: "Phần sườn bên hông rất dễ bị chọc léc." },
+            { id: 25, topic: "KIẾN TRÚC", question: "Nơi trong phòng đón ánh sáng?", answer: "CUA SO", hint: "Cánh cửa nhỏ trên tường để nhìn ra ngoài." },
+            { id: 26, topic: "NGHỀ NGHIỆP", question: "Sáng tạo bản vẽ hình dáng sản phẩm?", answer: "THIET KE", hint: "Công việc vẽ ra hình mẫu trước khi xây dựng." },
+            { id: 27, topic: "ĐỜI SỐNG", question: "Lối sống tuân thủ nề nếp?", answer: "QUY CU", hint: "Người sống rất nề nếp, khuôn phép." },
+            { id: 28, topic: "ĐÈN", question: "Vật dụng thắp sáng bằng nến thời xưa?", answer: "DEN LONG", hint: "Chiếc lồng màu đỏ thắp nến dịp Trung Thu." },
+            { id: 29, topic: "TÍNH CÁCH", question: "Vẻ ngoài chải chuốt quá mức?", answer: "BONG BAY", hint: "Làm dáng, ăn mặc mượt mà lấp lánh." },
+            { id: 30, topic: "THÀNH NGỮ", question: "Hệ thống pháp luật vô hình?", answer: "LUOI TROI", hint: "Lưới của ông trời lồng lộng thưa khó lọt." },
+            { id: 31, topic: "THÀNH NGỮ", question: "Khuyên bảo kẻ bảo thủ?", answer: "DAN GAY TAI TRAU", hint: "Đánh đàn cho con vật có sừng nghe." },
+            { id: 32, topic: "THÀNH NGỮ", question: "Thương xót giả tạo?", answer: "NUOC MAT CA SAU", hint: "Giọt lệ của loài bò sát mõm dài." },
+            { id: 33, topic: "THÀNH NGỮ", question: "Hãm hại người khác lén lút?", answer: "NEM DA GIAU TAY", hint: "Quăng cục đá xong giấu tay đi." },
+            { id: 34, topic: "THÀNH NGỮ", question: "Mưu hại người tự hại mình?", answer: "GAY ONG DAP LUNG ONG", hint: "Lấy gậy của người đó đánh lại chính họ." },
+            { id: 35, topic: "THÀNH NGỮ", question: "Lợi dụng lúc lộn xộn trục lợi?", answer: "DUC NUOC BEO CO", hint: "Nước đục thì loài chim mỏ dài dễ bắt cá." },
+            { id: 36, topic: "TỪ LÓNG", question: "Sắp phải đối mặt nguy cơ bị xử lý?", answer: "LEN THOT", hint: "Chuẩn bị bị mang ra làm thịt." },
+            { id: 37, topic: "THÀNH NGỮ", question: "Viết xuống không thể rút lại?", answer: "BUT SA GA CHET", hint: "Mực đã rơi xuống giấy thì không sửa được." },
+            { id: 38, topic: "TÍNH CÁCH", question: "Sống phũ phàng quên ơn nghĩa?", answer: "BAC BEO", hint: "Bạc tình, tệ bạc với người từng giúp mình." },
+            { id: 39, topic: "THỰC VẬT", question: "Quả có vị đắng đặc trưng?", answer: "KHO QUA", hint: "Tên gọi khác của trái Mướp đắng." },
+            { id: 40, topic: "TÌNH CẢM", question: "Nơi trải qua nhiều mối tình?", answer: "TINH TRUONG", hint: "Thương trường, chiến trường và...?" },
+            { id: 41, topic: "TÍNH CÁCH", question: "Thật tâm chân thành?", answer: "CHAN THANH", hint: "Sống rất thật lòng, không dối trá." },
+            { id: 42, topic: "TÍNH CÁCH", question: "Cư xử đàng hoàng?", answer: "DUNG DAN", hint: "Đứng đắn, chững chạc." },
+            { id: 43, topic: "NGHỆ THUẬT", question: "Kịch dùng tiếng cười phê phán?", answer: "HAI KICH", hint: "Vở diễn mang lại tiếng cười cho khán giả." },
+            { id: 44, topic: "KIẾN TRÚC", question: "Một tên gọi dân dã khác của nhà vệ sinh?", answer: "CAU TIEU", hint: "Cây cầu bắc qua ao chuôm thời xưa." },
+            { id: 45, topic: "ĐỜI SỐNG", question: "Tiếng rên rỉ khổ tâm?", answer: "THAN KHOC", hint: "Khóc lóc và than vãn." },
+            { id: 46, topic: "GIẢI PHẪU", question: "Tâm tư ẩn sâu con người?", answer: "LONG DA", hint: "Lòng và dạ dày, chỉ tâm địa con người." },
+            { id: 47, topic: "THÀNH NGỮ", question: "Lời ngon ngọt chứa bẫy?", answer: "MAT NGOT CHET RUOI", hint: "Thứ chất lỏng làm bầy ruồi bu vào chết." },
+            { id: 48, topic: "CẢM XÚC", question: "Bên trong trống trơn không kiến thức?", answer: "TRONG RONG", hint: "Cảm giác không có gì bên trong đầu." },
+            { id: 49, topic: "THÀNH NGỮ", question: "Kẻ thay đổi lập trường theo hướng lợi?", answer: "GIO CHIEU NAO CHE CHIEU AY", hint: "Gió thổi hướng nào thì xoay ô che hướng đó." },
+            { id: 50, topic: "THÀNH NGỮ", question: "Hạng người không đàng hoàng?", answer: "MEO MA GA DONG", hint: "Mèo hoang và Gà lang thang." },
+            { id: 51, topic: "Ý THỨC", question: "Hiểu biết qua học hành?", answer: "KIEN THUC", hint: "Kho tàng chữ nghĩa thu thập được." },
+            { id: 52, topic: "TÌNH CẢM", question: "Yêu hai người một lúc?", answer: "BAT CA HAI TAY", hint: "Hai tay tóm hai con cá cùng lúc." },
+            { id: 53, topic: "SINH HỌC", question: "Nơi ghi danh động vật quý hiếm?", answer: "SACH DO", hint: "Quyển sách có bìa màu đỏ." },
+            { id: 54, topic: "NHẠC CỤ", question: "Nhạc cụ dân tộc có 1 dây?", answer: "DAN BAU", hint: "Cây đàn làm từ vỏ quả bầu." },
+            { id: 55, topic: "CẢM XÚC", question: "Bàng hoàng trước tin tức?", answer: "CU SOC", hint: "Giống như bị điện giật." },
+            { id: 56, topic: "KIẾN TRÚC", question: "Nơi chôn cất người đã khuất?", answer: "NAM MO", hint: "Gò đất nhô lên ngoài nghĩa trang." },
+            { id: 57, topic: "HÀNH CHÍNH", question: "Tự nguyện trình diện công an?", answer: "DAU THU", hint: "Tội phạm tự ra đồn nộp mình." },
+            { id: 58, topic: "GIẢI PHẪU", question: "Tóc mảnh hai bên thái dương?", answer: "TOC MAI", hint: "Phần tóc mọc sát mang tai." },
+            { id: 59, topic: "THÀNH NGỮ", question: "Miệng từ bi lòng độc ác?", answer: "KHAU PHAT TAM XA", hint: "Khẩu phật tâm xà." },
+            { id: 60, topic: "THÀNH NGỮ", question: "Ít hiểu biết hay khoe khoang?", answer: "THUNG RONG KEU TO", hint: "Cái thùng không có gì gõ vào tiếng rất to." },
+            { id: 61, topic: "THÀNH NGỮ", question: "Cách nói ẩn ý châm chọc?", answer: "BONG GIO", hint: "Nói mỉa mai qua cái bóng và cơn gió." },
+            { id: 62, topic: "Y HỌC", question: "Kính dành cho người khó nhìn xa?", answer: "KINH CAN" , hint: "Kính dành cho người bị cận thị." },
+            { id: 63, topic: "TỪ LÓNG", question: "Thay đổi thái độ nhanh chóng?", answer: "LAT MAT", hint: "Hành động lật ngửa khuôn mặt lại." },
+            { id: 64, topic: "ẨM THỰC", question: "Món làm từ đá nhuyễn mùa hè?", answer: "DA BAO", hint: "Cục nước đá bào ra rưới si-rô." },
+            { id: 65, topic: "TỪ LÓNG", question: "Ví tiền trống rỗng?", answer: "CHAY TUI", hint: "Cái túi đang bốc hỏa." },
+            { id: 66, topic: "TỪ LÓNG", question: "Kẻ côn đồ hung hãn?", answer: "DAU GAU", hint: "Cái đầu của con gấu." },
+            { id: 67, topic: "TỪ LÓNG", question: "Thanh niên nông nổi?", answer: "TRE TRAU", hint: "Cậu bé chăn con trâu." },
+            { id: 68, topic: "TỪ LÓNG", question: "Gen Z than vãn khi xui?", answer: "XU CA NA", hint: "Ghép chữ xui xẻo và quả cà na." },
+            { id: 69, topic: "TỪ LÓNG", question: "Hoang mang không an tâm?", answer: "BAT ON", hint: "Trạng thái không hề ổn chút nào." },
+            { id: 70, topic: "TỪ LÓNG", question: "Kẻ chuyên gây họa?", answer: "BAO THU", hint: "Loài báo đốm thích báo hại." },
+            { id: 71, topic: "ẨM THỰC", question: "Món ăn drama chấn động?", answer: "LONG XAO DUA", hint: "Lòng heo xào với dưa chua." },
+            { id: 72, topic: "TỪ LÓNG", question: "Hành động lạnh nhạt?", answer: "CAM LANH", hint: "Một căn bệnh mùa đông: Cảm..." },
+            { id: 73, topic: "TỪ LÓNG", question: "Tình huống rắc rối xoắn não?", answer: "GAY LU", hint: "Khiến não bộ bị lú lẫn." },
+            { id: 74, topic: "TÀI NGUYÊN", question: "Nhiên liệu hóa thạch quý?", answer: "DAU MO", hint: "Chất lỏng màu đen bơm từ dưới lòng đất." },
+            { id: 75, topic: "TÌNH CẢM", question: "Người tình định mệnh?", answer: "CHAN AI", hint: "Tình yêu chân thật của đời người." },
+            { id: 76, topic: "TỪ LÓNG", question: "Gánh vác đưa đội chiến thắng?", answer: "GANH TEAM", hint: "Dùng đòn gánh cõng cả team lên." },
+            { id: 77, topic: "TỪ LÓNG", question: "Hot trend múa võ?", answer: "DI DUONG QUYEN", hint: "Múa một đường quyền biểu diễn." },
+            { id: 78, topic: "TỪ LÓNG", question: "Tìm người yêu trên app?", answer: "QUET TINDER", hint: "Vuốt màn hình trên app hẹn hò." },
+            { id: 79, topic: "TỪ LÓNG", question: "Quay ngoắt hủy quyết định?", answer: "QUAY XE", hint: "Vòng vô-lăng xe quay lại." },
+            { id: 80, topic: "TỪ LÓNG", question: "Bị người khác vùi dập?", answer: "AN HANH", hint: "Bị bắt phải nhai củ hành tây." },
+            { id: 81, topic: "KINH TẾ", question: "Đẩy giá ảo tưởng?", answer: "NGAO GIA", hint: "Trạng thái ngáo ngơ vì giá quá ảo." },
+            { id: 82, topic: "KINH TẾ", question: "Thổi phồng bất động sản?", answer: "THOI GIA", hint: "Dùng miệng thổi giá lên cao." },
+            { id: 83, topic: "TÌNH CẢM", question: "Phản bội người yêu?", answer: "CAM SUNG", hint: "Bị mọc thêm hai cái sừng trên đầu." },
+            { id: 84, topic: "TÌNH CẢM", question: "Nỗi đau gánh vác hậu quả?", answer: "DO VO", hint: "Thu dọn vỏ ốc, vỏ ốc đổ rác." },
+            { id: 85, topic: "ĐẦU TƯ", question: "Mua tiền ảo giá đỉnh?", answer: "DU DINH", hint: "Treo mình lơ lửng trên ngọn núi." },
+            { id: 86, topic: "ĐẦU TƯ", question: "Mua đúng giá thấp nhất?", answer: "BAT DAY", hint: "Thò tay vớt ở dưới đáy giếng." },
+            { id: 87, topic: "TỪ LÓNG", question: "Lừa người thiếu kinh nghiệm?", answer: "LUA GA", hint: "Dùng chổi lùa bầy gà con." },
+            { id: 88, topic: "TỪ LÓNG", question: "Xả tài sản lên đầu người khác?", answer: "UP BO", hint: "Lấy cái bô chụp lên đầu." },
+            { id: 89, topic: "Y HỌC", question: "Bệnh tâm lý trầm uất?", answer: "TRAM CAM", hint: "Khúc gỗ trầm hương chìm xuống biển." },
+            { id: 90, topic: "TỪ LÓNG", question: "Khen hành động dũng cảm?", answer: "HAO HAN", hint: "Tên một vị anh hùng lương sơn." },
+            { id: 91, topic: "TỪ LÓNG", question: "Vị trí tồi tệ phân tầng?", answer: "DAY XA HOI", hint: "Nơi bẩn nhất của xã hội." },
+            { id: 92, topic: "KIẾN TRÚC", question: "Nơi hoàn toàn khuất sáng?", answer: "BONG TOI", hint: "Nơi ánh sáng không chiếu tới." },
+            { id: 93, topic: "TRIẾT HỌC", question: "Sự thật luôn đúng?", answer: "CHAN LY", hint: "Chân lý chiếu sáng mười phương." },
+            { id: 94, topic: "TỪ LÓNG", question: "Người thức xuyên đêm?", answer: "CU DEM", hint: "Loài chim có đôi mắt to hay kêu ban đêm." },
+            { id: 95, topic: "TỪ LÓNG", question: "Hot trend phát ngôn vô tri?", answer: "XA LER", hint: "Xà lơ." },
+            { id: 96, topic: "TỪ LÓNG", question: "Hành động làm quá lố?", answer: "O DE", hint: "Ô dề." },
+            { id: 97, topic: "TỪ LÓNG", question: "Khen món ăn ngon?", answer: "MLEM", hint: "Tiếng liếm mép vì thèm ăn." },
+            { id: 98, topic: "TỪ LÓNG", question: "Hành động phá phách?", answer: "BAO DOI", hint: "Báo đời báo hại." },
+            { id: 99, topic: "QUANG HỌC", question: "Tia sáng dội ngược lại?", answer: "PHAN QUANG", hint: "Hiện tượng phản xạ ánh sáng." },
+            { id: 100, topic: "CẢNH GIỚI", question: "Chất lượng đồ họa game?", answer: "DANG CAP", hint: "Từ thể hiện sự tuyệt vời, VIP nhất." }
         ];
 
-        const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        const VIETNAMESE_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
         const generateKeyboard = (word) => {
-            let letters = word.replace(/\s/g, '').split('');
-            let pool = [...letters];
-            while (pool.length < 14) { pool.push(ALPHABET[Math.floor(Math.random() * 26)]); }
-            return pool.sort(() => Math.random() - 0.5).map((c, i) => ({ id: i, char: c, isUsed: false }));
+            if (!word) return [];
+            let letters = word.replace(/\s/g, '').split(''); 
+            let targetLength = Math.max(14, Math.ceil(letters.length / 7) * 7);
+            let keyboardLetters = [...letters];
+            while (keyboardLetters.length < targetLength) { 
+                keyboardLetters.push(VIETNAMESE_ALPHABET[Math.floor(Math.random() * VIETNAMESE_ALPHABET.length)]); 
+            }
+            return keyboardLetters.sort(() => Math.random() - 0.5).map((char, index) => ({ id: index, char: char, isUsed: false }));
         };
 
-        // --- CUSTOM MODAL VIP ---
-        const CustomAlert = ({ isOpen, title, message, onConfirm, onCancel, showCancel }) => {
+        const CustomAlert = ({ isOpen, title, message, type = 'warning', onConfirm, onCancel, showCancel = false }) => {
             if (!isOpen) return null;
+            const isWarning = type === 'warning';
+            const borderColor = isWarning ? 'border-amber-500' : 'border-red-500';
+            const icon = isWarning ? '💡' : '🚨';
+            const titleColor = isWarning ? 'text-amber-500' : 'text-red-500';
+
             return (
                 <div className="absolute inset-0 z-[100] flex items-center justify-center p-6 bg-black/80 backdrop-blur-md animate-fade">
-                    <div className="glass-panel w-full max-w-sm p-8 rounded-[32px] flex flex-col items-center border-t-4 border-amber-500 shadow-2xl scale-100">
-                        <h2 className="text-2xl font-black mb-4 text-amber-500 uppercase tracking-widest">{title}</h2>
-                        <p className="text-zinc-300 text-center mb-8 font-medium leading-relaxed">{message}</p>
+                    <div className={`glass-panel w-full max-w-sm p-8 rounded-[32px] flex flex-col items-center border-t-4 ${borderColor} shadow-2xl scale-100`}>
+                        <div className="text-5xl mb-4 drop-shadow-xl">{icon}</div>
+                        <h2 className={`text-2xl font-black mb-3 text-center uppercase tracking-widest ${titleColor}`}>{title}</h2>
+                        <p className="text-zinc-300 text-center mb-8 leading-relaxed font-medium">{message}</p>
+                        
                         <div className="flex w-full gap-4">
-                            {showCancel && <button onClick={onCancel} className="flex-1 py-4 bg-zinc-800 rounded-2xl font-bold text-zinc-400">HỦY</button>}
-                            <button onClick={onConfirm} className="flex-1 py-4 bg-gold rounded-2xl font-black text-black">ĐỒNG Ý</button>
+                            {showCancel && (
+                                <button onClick={onCancel} className="flex-1 py-4 bg-zinc-800 rounded-2xl text-zinc-400 font-bold active:scale-95 transition-transform border border-zinc-700">
+                                    HỦY BỎ
+                                </button>
+                            )}
+                            <button onClick={onConfirm} className={`flex-1 py-4 rounded-2xl font-black text-black active:scale-95 transition-transform ${isWarning ? 'bg-gold shadow-gold' : 'bg-red-500 shadow-[0_0_15px_rgba(239,68,68,0.4)]'}`}>
+                                ĐỒNG Ý
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -201,149 +200,333 @@
         };
 
         function App() {
-            const [coins, setCoins] = useState(1500);
-            const [levelId, setLevelId] = useState(1);
+            const [currentScreen, setCurrentScreen] = useState('home');
             const [nickname, setNickname] = useState('');
-            const [screen, setScreen] = useState('home');
+            const [inputName, setInputName] = useState('');
+            const [coins, setCoins] = useState(1500);
+            const [currentLevelId, setCurrentLevelId] = useState(1);
             
             const [levelData, setLevelData] = useState(null);
-            const [slots, setSlots] = useState([]);
-            const [keyboard, setKeyboard] = useState([]);
-            const [hintLevel, setHintLevel] = useState(0); // 0: Tag, 1: Question, 2: Phao
-            const [isWrong, setIsWrong] = useState(false);
+            const [answerLayout, setAnswerLayout] = useState([]); 
+            const [availableLetters, setAvailableLetters] = useState([]);
+            
             const [isVictory, setIsVictory] = useState(false);
+            const [isWrong, setIsWrong] = useState(false); 
+            const [hintStage, setHintStage] = useState(0); 
 
-            const [alert, setAlert] = useState({ open: false, t: '', m: '', cancel: false, fn: null });
+            const [alertState, setAlertState] = useState({ isOpen: false, title: '', message: '', type: 'warning', showCancel: false, onConfirm: null });
+            const showAlert = (title, message, type = 'warning') => { playSound('wrong'); setAlertState({ isOpen: true, title, message, type, showCancel: false, onConfirm: closeAlert }); };
+            const showConfirm = (title, message, onConfirmAction) => { playSound('click'); setAlertState({ isOpen: true, title, message, type: 'warning', showCancel: true, onConfirm: () => { closeAlert(); onConfirmAction(); } }); };
+            const closeAlert = () => setAlertState({ ...alertState, isOpen: false });
 
             useEffect(() => {
-                const n = localStorage.getItem('dc_name');
-                const c = localStorage.getItem('dc_coins');
-                const l = localStorage.getItem('dc_lv');
-                if (n) { setNickname(n); if(c) setCoins(parseInt(c)); if(l) setLevelId(parseInt(l)); }
+                const savedName = localStorage.getItem('dc_nickname');
+                const savedCoins = localStorage.getItem('dc_coins');
+                const savedLevel = localStorage.getItem('dc_level');
+                if (savedName) {
+                    setNickname(savedName);
+                    if (savedCoins) setCoins(parseInt(savedCoins));
+                    if (savedLevel) setCurrentLevelId(parseInt(savedLevel));
+                }
             }, []);
 
-            const handleLogin = (name) => {
-                if(!name) return;
-                setNickname(name.toUpperCase());
-                localStorage.setItem('dc_name', name.toUpperCase());
-                setScreen('play');
-                initLevel(levelId);
+            const handleLogin = () => {
+                if (!nickname && inputName.trim() === '') { showAlert("THIẾU THÔNG TIN", "Đẳng cấp cần một cái tên. Hãy nhập Biệt danh để tiếp tục!", "error"); return; }
+                if (!nickname) {
+                    const cleanName = inputName.trim().toUpperCase();
+                    setNickname(cleanName);
+                    localStorage.setItem('dc_nickname', cleanName);
+                    localStorage.setItem('dc_coins', '1500');
+                    localStorage.setItem('dc_level', '1');
+                }
+                setCurrentScreen('seasons'); 
             };
 
-            const initLevel = (id) => {
-                const data = OFFLINE_DB.find(x => x.id === id) || OFFLINE_DB[0];
-                setLevelData(data);
-                const s = [];
-                for(let c of data.answer) { s.push(c === ' ' ? { type: 'space' } : { type: 'slot', char: null, ref: null }); }
-                setSlots(s);
-                setKeyboard(generateKeyboard(data.answer));
-                setHintLevel(0); setIsWrong(false); setIsVictory(false);
+            const handleLogout = () => { showConfirm("XÓA DỮ LIỆU?", "Toàn bộ Xu và Cấp độ sẽ bị bốc hơi vĩnh viễn. Bạn có chắc chắn muốn xóa hồ sơ hiện tại?", () => { localStorage.clear(); setNickname(''); setInputName(''); setCoins(1500); setCurrentLevelId(1); setCurrentScreen('home'); }); };
+
+            const startSeason1 = () => {
+                const lvl = OFFLINE_DB.find(l => l.id === currentLevelId) || OFFLINE_DB[0];
+                initLevel(lvl);
+                setCurrentScreen('play');
             };
 
-            const handlePress = (item) => {
-                if (item.isUsed || isVictory) return;
+            const initLevel = (lvlObj) => {
+                setLevelData(lvlObj);
+                const layout = [];
+                for (let i = 0; i < lvlObj.answer.length; i++) {
+                    if (lvlObj.answer[i] === ' ') { layout.push({ type: 'space' }); } 
+                    else { layout.push({ type: 'slot', char: null, letterObj: null }); }
+                }
+                setAnswerLayout(layout);
+                setAvailableLetters(generateKeyboard(lvlObj.answer));     
+                setIsVictory(false); setIsWrong(false); setHintStage(0); 
+            };
+
+            const handleLetterClick = (letterObj) => {
+                if (letterObj.isUsed || isVictory) return;
                 playSound('click'); setIsWrong(false);
-                const idx = slots.findIndex(s => s.type === 'slot' && s.char === null);
-                if (idx !== -1) {
-                    const newSlots = [...slots];
-                    newSlots[idx] = { ...newSlots[idx], char: item.char, ref: item.id };
-                    setSlots(newSlots);
-                    setKeyboard(keyboard.map(k => k.id === item.id ? { ...k, isUsed: true } : k));
+                const firstEmptyIndex = answerLayout.findIndex(item => item.type === 'slot' && item.char === null);
+                
+                if (firstEmptyIndex !== -1) {
+                    const newLayout = [...answerLayout];
+                    newLayout[firstEmptyIndex] = { type: 'slot', char: letterObj.char, letterObj: letterObj };
+                    setAnswerLayout(newLayout);
+                    setAvailableLetters(availableLetters.map(l => l.id === letterObj.id ? { ...l, isUsed: true } : l));
                 }
             };
 
-            const handleRemove = (idx) => {
-                if (slots[idx].char === null || isVictory) return;
-                playSound('click'); setIsWrong(false);
-                const refId = slots[idx].ref;
-                const newSlots = [...slots];
-                newSlots[idx] = { ...newSlots[idx], char: null, ref: null };
-                setSlots(newSlots);
-                setKeyboard(keyboard.map(k => k.id === refId ? { ...k, isUsed: false } : k));
+            const handleSlotClick = (index) => {
+                const slotItem = answerLayout[index];
+                if (slotItem.type === 'slot' && slotItem.char !== null && !isVictory) {
+                    playSound('click'); setIsWrong(false);
+                    const letterObj = slotItem.letterObj;
+                    const newLayout = [...answerLayout];
+                    newLayout[index] = { type: 'slot', char: null, letterObj: null };
+                    setAnswerLayout(newLayout);
+                    setAvailableLetters(availableLetters.map(l => l.id === letterObj.id ? { ...l, isUsed: false } : l));
+                }
             };
+
+            const buyHint1 = () => {
+                if(coins < 100) { showAlert("THIẾU XU", "Bạn không đủ tiền để mua gợi ý này. Hãy tự suy nghĩ nhé!", "error"); return; }
+                showConfirm("MỞ CÂU HỎI", "Trừ 100 Xu để hiển thị câu hỏi chi tiết?", () => { playSound('coin'); setCoins(c => c - 100); setHintStage(1); saveProgress(coins - 100, currentLevelId); });
+            };
+
+            const buyHint2 = () => {
+                if(coins < 150) { showAlert("THIẾU XU", "Ví của bạn đã cạn. Không đủ xu mua Phao cứu sinh!", "error"); return; }
+                showConfirm("MUA PHAO CỨU SINH", "Trừ 150 Xu để nhận gợi ý cực mạnh từ chuyên gia?", () => { playSound('coin'); setCoins(c => c - 150); setHintStage(2); saveProgress(coins - 150, currentLevelId); });
+            };
+
+            const saveProgress = (newCoins, newLevelId) => { localStorage.setItem('dc_coins', newCoins); localStorage.setItem('dc_level', newLevelId); };
 
             useEffect(() => {
-                if (slots.length > 0 && !slots.some(s => s.type === 'slot' && s.char === null)) {
-                    const res = slots.map(s => s.type === 'space' ? ' ' : s.char).join('');
-                    if (res === levelData.answer) {
-                        playSound('win'); setTimeout(() => setIsVictory(true), 300);
-                        const nc = coins + 300; setCoins(nc);
-                        localStorage.setItem('dc_coins', nc);
-                        localStorage.setItem('dc_lv', levelId + 1);
+                const isFull = !answerLayout.some(item => item.type === 'slot' && item.char === null);
+                if (isFull && answerLayout.length > 0) {
+                    const currentAnswer = answerLayout.map(item => item.type === 'space' ? ' ' : item.char).join('');
+                    if (currentAnswer === levelData.answer) {
+                        if (levelData.id === 100) { playSound('seasonWin'); } else { playSound('win'); }
+                        setTimeout(() => setIsVictory(true), 300);
+                        const newCoins = coins + 300; 
+                        setCoins(newCoins);
+                        saveProgress(newCoins, currentLevelId + 1);
                     } else {
-                        playSound('wrong'); setIsWrong(true);
+                        playSound('wrong');
+                        setIsWrong(true);
                     }
                 }
-            }, [slots]);
+            }, [answerLayout]);
 
-            const next = () => { setLevelId(levelId + 1); initLevel(levelId + 1); };
+            const handleNextLevel = () => {
+                const nextLevel = OFFLINE_DB.find(l => l.id === currentLevelId + 1);
+                if (nextLevel) { setCurrentLevelId(nextLevel.id); initLevel(nextLevel); } 
+                else { setCurrentLevelId(currentLevelId + 1); setCurrentScreen('seasons'); }
+            };
+
+            if (currentScreen === 'home') {
+                return (
+                    <div className="max-w-md mx-auto min-h-screen flex flex-col justify-between p-6 relative">
+                        <CustomAlert isOpen={alertState.isOpen} title={alertState.title} message={alertState.message} type={alertState.type} onConfirm={alertState.onConfirm} onCancel={closeAlert} showCancel={alertState.showCancel} />
+                        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-64 bg-amber-500 rounded-full blur-[120px] opacity-20 pointer-events-none"></div>
+                        
+                        <div className="mt-16 z-10 flex flex-col items-center">
+                            <div className="w-32 h-32 mb-6 relative shine-effect rounded-[32px] p-[2px] bg-gradient-to-br from-[#d4af37] via-[#fffacd] to-[#daa520] shadow-[0_0_40px_rgba(218,165,32,0.4)]">
+                                <div className="w-full h-full bg-[#09090b] rounded-[30px] flex items-center justify-center overflow-hidden">
+                                    <img src="./images/logo.png" alt="Logo" className="w-full h-full object-cover" onError={(e) => { e.target.onerror = null; e.target.src="./images/level1.jpg"; }} />
+                                </div>
+                            </div>
+                            <div className="text-center">
+                                <h1 className="text-[28px] font-black text-gold tracking-[0.3em] uppercase mb-[-5px]">Đẳng Cấp</h1>
+                                <h2 className="text-[52px] font-black text-white tracking-tighter" style={{ fontFamily: "'Playfair Display', serif" }}>
+                                    Bắt Chữ <span className="text-3xl text-gold font-sans italic ml-[-5px]">3D</span>
+                                </h2>
+                            </div>
+                            <div className="h-px w-24 bg-gradient-to-r from-transparent via-amber-500 to-transparent mt-4 opacity-50"></div>
+                        </div>
+
+                        <div className="glass-panel p-8 rounded-[32px] w-full z-10 mt-8 shadow-2xl">
+                            {nickname ? (
+                                <div className="text-center">
+                                    <p className="text-zinc-400 text-sm font-medium mb-1">Mừng Cao Thủ Trở Lại</p>
+                                    <h3 className="text-3xl font-black text-gold mb-8 uppercase tracking-wider">{nickname}</h3>
+                                    <button onClick={handleLogin} className="w-full py-4 bg-gold rounded-2xl font-black text-black text-lg shine-effect active:scale-95 transition-all mb-4">VÀO SẢNH CHÍNH</button>
+                                    <button onClick={handleLogout} className="text-zinc-500 text-sm underline mt-2 py-2">Đăng xuất & Đổi tên khác</button>
+                                </div>
+                            ) : (
+                                <div className="flex flex-col">
+                                    <p className="text-center text-zinc-400 text-sm mb-6 leading-relaxed">Đăng ký danh tính để đua Top Đẳng Cấp.</p>
+                                    <div className="relative mb-6">
+                                        <input type="text" value={inputName} onChange={(e) => setInputName(e.target.value)} placeholder="Nhập Biệt danh..." className="w-full bg-zinc-900/80 border border-zinc-700 focus:border-amber-500 text-white rounded-2xl p-4 pl-12 font-bold text-lg outline-none uppercase placeholder:font-normal placeholder:text-zinc-600 placeholder:normal-case" maxLength="15" />
+                                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xl">👤</span>
+                                    </div>
+                                    <button onClick={handleLogin} className="w-full py-4 bg-gold rounded-2xl font-black text-black text-lg shine-effect active:scale-95 transition-all">BẮT ĐẦU</button>
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="z-10 mt-8 mb-2 w-full text-center">
+                            <div className="flex flex-col items-center justify-center space-y-1 bg-zinc-900/40 py-3 px-6 rounded-full border border-zinc-800/50 backdrop-blur-sm mx-auto w-max">
+                                <p className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold">© 2026 Bản quyền <span className="text-gold ml-1 text-[12px]">MinhTT</span></p>
+                                <div className="flex items-center space-x-2">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+                                    <p className="text-xs font-bold text-zinc-300 tracking-wider">Hotline: <span className="text-white">0987.334.004</span></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            if (currentScreen === 'seasons') {
+                return (
+                    <div className="max-w-md mx-auto min-h-screen bg-zinc-950 p-6 pt-12 relative flex flex-col">
+                        <CustomAlert isOpen={alertState.isOpen} title={alertState.title} message={alertState.message} type={alertState.type} onConfirm={alertState.onConfirm} onCancel={closeAlert} showCancel={alertState.showCancel} />
+                        <div className="flex justify-between items-center mb-10 z-10">
+                            <h2 className="text-white text-2xl font-black tracking-widest">SẢNH CHÍNH</h2>
+                            <div className="flex items-center bg-zinc-800 px-4 py-2 rounded-full border border-amber-500/40 shadow-gold">
+                                <span className="text-amber-400 font-bold mr-2">{coins}</span><span className="text-amber-500">🪙</span>
+                            </div>
+                        </div>
+
+                        <div className="flex flex-col gap-6 z-10">
+                            <div className="glass-panel p-6 rounded-3xl relative overflow-hidden border border-amber-500/50">
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500 opacity-10 rounded-full blur-[40px]"></div>
+                                <h3 className="text-gold text-2xl font-black mb-2">MÙA 1: KHỞI NGUYÊN</h3>
+                                <p className="text-zinc-400 text-sm mb-6">100 Cấp độ cơ bản định hình tư duy.</p>
+                                <div className="bg-zinc-900 rounded-full h-3 w-full mb-2 overflow-hidden">
+                                    <div className="bg-gradient-to-r from-amber-600 to-amber-400 h-full transition-all duration-1000" style={{width: `${Math.min(currentLevelId, 100)}%`}}></div>
+                                </div>
+                                <div className="flex justify-between text-xs text-zinc-500 font-bold tracking-widest mb-6">
+                                    <span>TIẾN ĐỘ</span><span>{Math.min(currentLevelId, 100)}/100</span>
+                                </div>
+                                {currentLevelId > 100 ? (
+                                    <button disabled className="w-full py-4 bg-zinc-800 rounded-xl font-black text-amber-500 border border-amber-500/30">ĐÃ HOÀN THÀNH</button>
+                                ) : (
+                                    <button onClick={startSeason1} className="w-full py-4 bg-gold rounded-xl font-black text-black active:scale-95 transition-all">CHƠI NGAY</button>
+                                )}
+                            </div>
+
+                            <div className={`p-6 rounded-3xl relative overflow-hidden border ${currentLevelId > 100 ? 'glass-panel border-amber-500/50' : 'bg-zinc-900/50 border-zinc-800'}`}>
+                                <h3 className={`text-2xl font-black mb-2 ${currentLevelId > 100 ? 'text-gold' : 'text-zinc-600'}`}>MÙA 2: ĐỈNH CAO</h3>
+                                <p className="text-zinc-500 text-sm mb-6">Gói cấp độ thử thách tư duy phản biện.</p>
+                                {currentLevelId > 100 ? (
+                                    <button onClick={() => showAlert("CHƯA MỞ", "Mùa 2 đang trong quá trình phát triển. Vui lòng quay lại sau!", "warning")} className="w-full py-4 bg-zinc-800 rounded-xl font-black text-white active:scale-95 border border-zinc-700">ĐANG CẬP NHẬT...</button>
+                                ) : (
+                                    <div className="flex items-center justify-center py-4 bg-zinc-950 rounded-xl text-zinc-600 font-black tracking-widest">
+                                        <span className="mr-2">🔒</span> CẦN PHÁ ĐẢO MÙA 1
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            const slotCount = answerLayout.filter(item => item.type === 'slot').length;
+            const useGrid = slotCount > 8; 
 
             return (
-                <div className="max-w-md mx-auto h-full flex flex-col relative overflow-hidden bg-zinc-950">
-                    <CustomAlert isOpen={alert.open} title={alert.t} message={alert.m} showCancel={alert.cancel} onConfirm={() => { alert.fn?.(); setAlert({...alert, open: false}); }} onCancel={() => setAlert({...alert, open: false})} />
+                <div className="max-w-md mx-auto h-screen bg-zinc-950 relative flex flex-col overflow-hidden">
+                    <CustomAlert isOpen={alertState.isOpen} title={alertState.title} message={alertState.message} type={alertState.type} onConfirm={alertState.onConfirm} onCancel={closeAlert} showCancel={alertState.showCancel} />
+                    
+                    <div className="flex justify-between items-center p-5 pt-8 z-10 glass-panel border-b-0 rounded-b-3xl absolute top-0 w-full">
+                        <button onClick={() => setCurrentScreen('seasons')} className="p-3 bg-zinc-800 rounded-xl text-zinc-400 font-bold active:scale-90 transition-transform border border-zinc-700">❮</button>
+                        
+                        <div className="text-center flex flex-col items-center flex-1">
+                            <span className="text-white text-3xl font-black tracking-wider uppercase drop-shadow-md">LEVEL <span className="text-amber-500">{currentLevelId}</span></span>
+                        </div>
 
-                    {screen === 'home' ? (
-                        <div className="flex-1 flex flex-col justify-center items-center p-8 text-center animate-fade">
-                            <div className="w-24 h-24 mb-6 shine-effect rounded-3xl p-1 bg-gold shadow-lg"><img src="./images/logo.png" className="w-full h-full object-cover rounded-[20px]" /></div>
-                            <h1 className="text-[28px] font-black text-gold tracking-widest uppercase mb-[-5px]">Đẳng Cấp</h1>
-                            <h2 className="text-[52px] font-black text-white tracking-tighter" style={{fontFamily: "'Playfair Display', serif"}}>Bắt Chữ <span className="text-3xl text-gold">3D</span></h2>
-                            <div className="glass-panel p-8 rounded-[40px] w-full mt-10">
-                                <input type="text" placeholder="BIỆT DANH..." className="w-full bg-zinc-900 border-2 border-zinc-800 rounded-2xl p-4 text-center font-bold text-white mb-6 outline-none focus:border-amber-500 uppercase" onKeyDown={(e) => e.key === 'Enter' && handleLogin(e.target.value)} />
-                                <button onClick={() => handleLogin(document.querySelector('input').value)} className="w-full py-5 bg-gold rounded-full font-black text-black text-xl shine-effect">VÀO GAME ➔</button>
+                        <div className="flex items-center bg-zinc-800 px-4 py-2 rounded-full border border-amber-500/40 shadow-gold">
+                            <span className="text-amber-400 font-bold mr-2 text-lg">{coins}</span><span className="text-amber-500">🪙</span>
+                        </div>
+                    </div>
+
+                    <div className="flex-1 flex flex-col items-center px-5 pt-[100px] pb-4 overflow-y-auto">
+                        <div className="bg-amber-500/10 px-6 py-2 rounded-full mb-4 border border-amber-500/30 mt-2">
+                            <span className="text-amber-500 text-xs font-bold tracking-[0.2em] uppercase"># {levelData.topic}</span>
+                        </div>
+
+                        <div className="w-[85%] aspect-square rounded-[32px] overflow-hidden border-2 border-amber-600/50 mb-4 bg-black relative shadow-[0_0_30px_rgba(218,165,32,0.15)]">
+                            <img src={`./images/level${levelData.id}.jpg`} className="w-full h-full object-cover" alt="Quiz" />
+                        </div>
+
+                        <div className="w-full text-center px-2 min-h-[60px] flex flex-col justify-center items-center">
+                            {hintStage === 0 ? (
+                                <button onClick={buyHint1} className="py-2 px-6 bg-zinc-800 border border-zinc-700 rounded-full text-zinc-400 text-sm font-bold shadow-lg animate-pulse active:scale-95">
+                                    ❓ Mở Câu hỏi (-100 Xu)
+                                </button>
+                            ) : (
+                                <p className="text-white text-[15px] font-semibold leading-relaxed animate-[fadeIn_0.5s_ease-out]">
+                                    {levelData.question}
+                                </p>
+                            )}
+                            
+                            {hintStage === 2 && (
+                                <p className="text-amber-500 text-xs mt-2 font-bold animate-[fadeIn_0.5s_ease-out]">💡 PHAO: {levelData.hint}</p>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className="glass-panel p-5 pb-8 rounded-t-[40px] border-t border-zinc-800 relative z-20">
+                        {hintStage === 1 && (
+                            <div className="absolute -top-6 right-6 z-30">
+                                <button onClick={buyHint2} className="bg-zinc-800 px-4 py-2 rounded-full border border-amber-500/50 shadow-xl flex items-center gap-2 active:scale-95 animate-bounce">
+                                    <span>💡</span><span className="text-amber-500 text-xs font-bold">-150 Xu</span>
+                                </button>
+                            </div>
+                        )}
+
+                        <div className={`w-full flex justify-center items-center mb-8 mt-2 h-14 ${isWrong ? 'animate-shake' : ''}`}>
+                            <div className="w-full max-w-[95%] flex justify-center items-center flex-wrap">
+                                {answerLayout.map((item, index) => {
+                                    if (item.type === 'space') {
+                                        return <div key={`space-${index}`} className="word-space"></div>; 
+                                    } else {
+                                        return (
+                                            <button 
+                                                key={`slot-${index}`} onClick={() => handleSlotClick(index)}
+                                                style={{ width: useGrid ? `calc((100% - ${(slotCount-1)*4}px) / ${slotCount})` : '44px', margin: '2px 2px' }}
+                                                className={`h-14 rounded-xl flex justify-center items-center font-black ${useGrid ? 'text-lg md:text-xl' : 'text-2xl'} transition-all duration-200 
+                                                    ${item.char ? 'slot-filled' : 'slot-waiting'}`} 
+                                            >
+                                                {item.char ? item.char : ''}
+                                            </button>
+                                        );
+                                    }
+                                })}
                             </div>
                         </div>
-                    ) : (
-                        <div className="flex-1 flex flex-col">
-                            {/* HEADER - NÂNG LÊN CAO */}
-                            <div className="p-6 pt-10 text-center glass-panel border-b-0 rounded-b-[40px]">
-                                <span className="text-amber-500 text-xs font-black tracking-[0.3em]"># {levelData?.topic}</span>
-                                <h3 className="text-white text-4xl font-black mt-1">LEVEL {levelId}</h3>
-                                
-                                <div className="mt-4 min-h-[60px] flex items-center justify-center bg-black/40 rounded-3xl p-4 border border-zinc-800">
-                                    {hintLevel >= 1 ? <p className="text-[15px] font-semibold animate-fade">{levelData.question}</p> : <button onClick={() => setAlert({open: true, t: 'MỞ CÂU HỎI', m: 'Dùng 100 Xu để hiện câu hỏi?', cancel: true, fn: () => { setCoins(c => c-100); setHintLevel(1); }})} className="px-6 py-2 bg-zinc-800 rounded-full text-zinc-500 font-bold text-sm">Mở Câu hỏi (-100 Xu)</button>}
-                                </div>
-                                {hintLevel === 2 && <p className="text-amber-500 text-xs font-bold mt-2 animate-bounce uppercase tracking-widest">💡 Phao: {levelData.p || "Nhìn kỹ hình đi!"}</p>}
-                            </div>
 
-                            {/* CENTER - ẢNH VÀ Ô CHỮ CÂN ĐỐI */}
-                            <div className="flex-1 flex flex-col items-center justify-center p-6 gap-8">
-                                <div className="w-full aspect-square rounded-[40px] overflow-hidden border-4 border-zinc-800 shadow-2xl bg-black relative">
-                                    <img src={`./images/level${levelId}.jpg`} className="w-full h-full object-cover" />
-                                </div>
-
-                                <div className={`w-full flex flex-wrap justify-center gap-2 ${isWrong ? 'animate-shake' : ''}`}>
-                                    {slots.map((s, i) => (
-                                        s.type === 'space' ? <div key={i} className="w-full h-2"></div> :
-                                        <button key={i} onClick={() => handleRemove(i)} className={`w-12 h-14 rounded-xl flex items-center justify-center font-black text-2xl transition-all ${s.char ? 'slot-filled' : 'slot-waiting'}`}>{s.char}</button>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* BOTTOM - BÀN PHÍM VÀ VÍ VÀNG */}
-                            <div className="glass-panel p-6 pb-10 rounded-t-[50px] border-t-2">
-                                <div className="flex justify-between items-center mb-6">
-                                    <button onClick={() => setAlert({open: true, t: 'TRỢ GIÚP', m: 'Dùng 150 Xu để nhận phao cứu sinh?', cancel: true, fn: () => { setCoins(c => c-150); setHintLevel(2); }})} className="px-6 py-3 bg-zinc-800 rounded-full text-zinc-400 font-black text-xs border border-zinc-700 active:scale-95 transition-all">DÙNG PHAO CỨU SINH</button>
-                                    <div className="flex items-center gap-2 bg-black/40 px-4 py-2 rounded-2xl border border-zinc-800">
-                                        <span className="text-amber-400 font-black text-xl">{coins}</span><span className="text-xl">🪙</span>
-                                    </div>
-                                </div>
-
-                                <div className="flex flex-wrap justify-center gap-3">
-                                    {keyboard.map(k => (
-                                        <button key={k.id} onClick={() => handlePress(k)} className={`w-[calc(100%/7-12px)] aspect-square rounded-2xl font-black text-xl transition-all ${k.isUsed ? 'opacity-0 scale-50' : 'bg-zinc-800 border-b-4 border-black text-white active:translate-y-1'}`}>{k.char}</button>
-                                    ))}
-                                </div>
-                            </div>
+                        <div className="flex flex-wrap justify-center gap-2">
+                            {availableLetters.map((item) => (
+                                <button 
+                                    key={item.id} onClick={() => handleLetterClick(item)} disabled={item.isUsed}
+                                    className={`w-[calc(100%/7-0.5rem)] aspect-square max-h-[52px] rounded-2xl flex justify-center items-center font-black text-xl transition-all duration-150 
+                                        ${item.isUsed ? 'bg-zinc-950 opacity-20 translate-y-1 border-b-0 text-zinc-700' : 'bg-zinc-800 border-b-4 border-black text-white active:translate-y-1 active:border-b-0 shadow-lg hover:bg-zinc-700'}`}
+                                >
+                                    {item.char}
+                                </button>
+                            ))}
                         </div>
-                    )}
+                    </div>
 
                     {isVictory && (
-                        <div className="absolute inset-0 z-[110] bg-black/95 flex items-center justify-center p-8 animate-fade">
-                            <div className="glass-panel w-full p-10 rounded-[50px] flex flex-col items-center border-4 border-gold shadow-[0_0_50px_rgba(218,165,32,0.3)] relative overflow-hidden">
-                                <div className="absolute top-[-50px] w-full h-40 bg-gold opacity-10 blur-[60px]"></div>
-                                <h4 className="text-zinc-500 font-black tracking-widest text-sm mb-2 uppercase italic">Đáp án đẳng cấp</h4>
-                                <h2 className="text-gold text-5xl font-black mb-12 tracking-widest text-center">{levelData?.answer}</h2>
-                                <button onClick={next} className="w-full py-6 bg-gold rounded-full font-black text-black text-2xl shine-effect active:scale-95 transition-all">TIẾP THEO ➔</button>
+                        <div className="absolute inset-0 bg-black/95 flex justify-center items-center p-6 z-[90] animate-[fadeIn_0.3s_ease-out]">
+                            <div className="bg-zinc-900 p-8 rounded-[40px] flex flex-col items-center border-2 border-gold w-full max-w-sm shadow-[0_0_50px_rgba(191,149,63,0.2)] relative overflow-hidden">
+                                <div className="absolute top-[-50px] w-full h-32 bg-gold opacity-20 blur-[50px]"></div>
+                                
+                                {levelData.id === 100 ? (
+                                    <>
+                                        <h3 className="text-amber-500 font-black tracking-widest text-lg mb-2 text-center animate-bounce drop-shadow-xl">🏆 CHÚC MỪNG PHÁ ĐẢO! 🏆</h3>
+                                        <p className="text-zinc-400 text-sm text-center mb-6">Đẳng cấp của bạn đã được khẳng định (+300 🪙)</p>
+                                    </>
+                                ) : (
+                                    <h3 className="text-zinc-400 font-bold tracking-widest text-sm mb-2">ĐÁP ÁN CHUẨN (+300 🪙)</h3>
+                                )}
+
+                                <h2 className="text-gold text-5xl font-black mb-10 tracking-widest text-center">{levelData.answer}</h2>
+                                <button onClick={handleNextLevel} className="bg-gold w-full py-5 rounded-full font-black text-black text-xl tracking-widest shadow-gold active:scale-95 transition-transform">
+                                    {levelData.id === 100 ? 'VỀ SẢNH CHÍNH ➔' : 'TIẾP THEO ➔'}
+                                </button>
                             </div>
                         </div>
                     )}
