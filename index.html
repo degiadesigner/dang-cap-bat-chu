@@ -19,11 +19,7 @@
         
         body { background-color: #09090b; color: white; font-family: 'Montserrat', sans-serif; touch-action: manipulation; margin: 0; overflow: hidden; background-image: radial-gradient(circle at 50% 0%, #18181b 0%, #000000 100%); }
         html, body, #root { height: 100%; overflow: hidden; }
-        
-        /* Tối ưu thanh cuộn cho khu vực chính */
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(218, 165, 32, 0.3); border-radius: 4px; }
+        ::-webkit-scrollbar { display: none; }
 
         .text-gold { background: linear-gradient(to bottom right, #facc15 0%, #eab308 50%, #ca8a04 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
         .bg-gold { background: linear-gradient(135deg, #facc15 0%, #eab308 50%, #ca8a04 100%); }
@@ -43,8 +39,6 @@
         
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
         .animate-fade { animation: fadeIn 0.3s ease-out forwards; }
-
-        .word-space { width: 16px; height: 56px; display: inline-block; flex-shrink: 0; }
     </style>
 </head>
 <body>
@@ -181,7 +175,8 @@
             const titleColor = isWarning ? 'text-amber-500' : 'text-red-500';
 
             return (
-                <div className="absolute inset-0 z-[100] flex items-center justify-center p-6 bg-black/80 backdrop-blur-md animate-fade">
+                /* FIX LỖI 1: Cấp cho Modal z-index siêu cao (9999) để không bao giờ bị đè */
+                <div className="absolute inset-0 z-[9999] flex items-center justify-center p-6 bg-black/80 backdrop-blur-md animate-fade">
                     <div className={`glass-panel w-full max-w-sm p-8 rounded-[32px] flex flex-col items-center border-t-4 ${borderColor} shadow-2xl scale-100`}>
                         <div className="text-5xl mb-4 drop-shadow-xl">{icon}</div>
                         <h2 className={`text-xl font-black mb-3 text-center uppercase tracking-widest ${titleColor}`}>{title}</h2>
@@ -316,7 +311,7 @@
                 const isFull = answerSlots.filter(s => s.type === 'slot').every(s => s.char !== null);
                 if (isFull && answerSlots.filter(s => s.type === 'slot').length > 0) {
                     const currentAnswer = answerSlots.map(s => s.char).join('');
-                    if (currentAnswer === levelData.answer) {
+                    if (currentAnswer === levelData.answer.replace(/\s/g, '')) {
                         if (levelData.id === 100) { playSound('seasonWin'); } else { playSound('win'); }
                         setTimeout(() => setIsVictory(true), 300);
                         const newCoins = coins + 300; 
@@ -435,11 +430,12 @@
             }
 
             return (
-                <div className="max-w-md mx-auto h-screen bg-zinc-950 relative flex flex-col overflow-hidden">
+                /* FIX LỖI 2: Xóa bỏ thuộc tính overflow-hidden ở body và cho phép flex-col scroll tự nhiên */
+                <div className="max-w-md mx-auto min-h-screen bg-zinc-950 relative flex flex-col">
                     <CustomAlert isOpen={alertState.isOpen} title={alertState.title} message={alertState.message} type={alertState.type} onConfirm={alertState.onConfirm} onCancel={closeAlert} showCancel={alertState.showCancel} />
                     
-                    {/* Header cố định trên cùng */}
-                    <div className="flex justify-between items-center p-5 pt-8 z-10 glass-panel border-b-0 rounded-b-3xl absolute top-0 w-full">
+                    {/* Header */}
+                    <div className="flex justify-between items-center p-5 pt-8 z-10 glass-panel border-b-0 rounded-b-3xl absolute top-0 left-0 right-0 max-w-md mx-auto w-full">
                         <button onClick={() => setCurrentScreen('seasons')} className="p-3 bg-zinc-800 rounded-xl text-zinc-400 font-bold active:scale-90 transition-transform border border-zinc-700">❮</button>
                         
                         <div className="text-center flex flex-col items-center flex-1">
@@ -451,10 +447,9 @@
                         </div>
                     </div>
 
-                    {/* Vùng chứa ẢNH và KHAY ĐÁP ÁN - Cho phép cuộn nến nội dung quá dài */}
-                    <div className="flex-1 flex flex-col items-center px-4 pt-[90px] pb-4 overflow-y-auto w-full">
+                    {/* Vùng Content: Thêm flex-1 và margin-top để không bị header đè */}
+                    <div className="flex-1 flex flex-col items-center px-4 pt-[110px] pb-[200px] overflow-y-auto w-full">
                         
-                        {/* TAG GỢI Ý THÔNG MINH */}
                         <div 
                             onClick={handleHintClick}
                             className={`w-full text-center p-2 rounded-2xl mb-4 border transition-all cursor-pointer shadow-lg flex flex-col justify-center items-center min-h-[60px] flex-shrink-0
@@ -482,19 +477,17 @@
                             )}
                         </div>
 
-                        {/* ẢNH 3D CHÍNH */}
+                        {/* Ảnh 3D */}
                         <div className="w-[85%] aspect-square rounded-[32px] overflow-hidden border-2 border-amber-600/50 mb-6 bg-black relative shadow-[0_0_30px_rgba(218,165,32,0.15)] flex-shrink-0">
                             <img src={`./images/level${levelData.id}.jpg`} className="w-full h-full object-cover" alt="Quiz" />
                         </div>
 
-                        {/* KHAY ĐÁP ÁN (DÙNG MẢNG PHẲNG, BỌC KHỐI ĐỂ XUỐNG DÒNG MƯỢT MÀ) */}
+                        {/* Khay đáp án */}
                         <div className={`w-full flex justify-center mt-auto mb-2 ${isWrong ? 'animate-shake' : ''} flex-shrink-0`}>
                             <div className="flex flex-wrap justify-center gap-y-3 px-1 max-w-[100%]">
-                                {/* Tạo các nhóm từ để trình bày */}
                                 {levelData.answer.split(' ').map((wordStr, wordIdx) => {
-                                    // Xác định vị trí (index) thực sự của ký tự đầu tiên trong từ này so với mảng answerSlots
                                     let startIndex = 0;
-                                    for(let i=0; i<wordIdx; i++) startIndex += levelData.answer.split(' ')[i].length + 1; // +1 là cộng cả khoảng trắng
+                                    for(let i=0; i<wordIdx; i++) startIndex += levelData.answer.split(' ')[i].length + 1;
                                     
                                     return (
                                         <div key={`wordbox-${wordIdx}`} className="flex gap-[4px] mx-2">
@@ -518,8 +511,8 @@
                         </div>
                     </div>
 
-                    {/* BÀN PHÍM CỐ ĐỊNH Ở DƯỚI CÙNG */}
-                    <div className="glass-panel p-4 pb-8 rounded-t-[40px] border-t border-zinc-800 relative z-20 flex-shrink-0">
+                    {/* FIX LỖI 3: Khu vực bàn phím CỐ ĐỊNH HOÀN TOÀN BÊN DƯỚI (Fixed Bottom), không bị trượt theo nội dung và z-index cực cao để bắt cảm ứng */}
+                    <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md glass-panel p-4 pb-8 rounded-t-[40px] border-t border-zinc-800 z-[50]">
                         <div className="flex flex-wrap justify-center gap-1.5 md:gap-2 px-1">
                             {availableLetters.map((item) => (
                                 <button 
@@ -535,7 +528,7 @@
 
                     {/* MODAL CHIẾN THẮNG */}
                     {isVictory && (
-                        <div className="absolute inset-0 bg-black/95 flex justify-center items-center p-6 z-[90] animate-[fadeIn_0.3s_ease-out]">
+                        <div className="absolute inset-0 bg-black/95 flex justify-center items-center p-6 z-[9999] animate-[fadeIn_0.3s_ease-out]">
                             <div className="bg-zinc-900 p-8 rounded-[40px] flex flex-col items-center border-2 border-gold w-full max-w-sm shadow-[0_0_50px_rgba(191,149,63,0.2)] relative overflow-hidden">
                                 <div className="absolute top-[-50px] w-full h-32 bg-gold opacity-20 blur-[50px]"></div>
                                 
