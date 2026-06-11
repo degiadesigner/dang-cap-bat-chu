@@ -25,6 +25,7 @@
         .bg-gold { background: linear-gradient(135deg, #facc15 0%, #eab308 50%, #ca8a04 100%); }
         .glass-panel { background: rgba(24, 24, 27, 0.4); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid rgba(250, 204, 21, 0.1); }
 
+        /* Kích thước ô chữ CỐ ĐỊNH, TO RÕ RÀNG */
         .slot-base { width: 44px; height: 56px; display: flex; justify-content: center; align-items: center; border-radius: 12px; font-weight: 900; font-size: 28px; transition: all 0.2s; border-bottom-width: 4px; flex-shrink: 0; }
         
         .slot-waiting { background: rgba(63, 63, 70, 0.4); border-color: #b8860b; box-shadow: inset 0 0 10px rgba(0,0,0,0.5), 0 0 10px rgba(184, 134, 11, 0.4); color: transparent; }
@@ -39,6 +40,8 @@
         
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
         .animate-fade { animation: fadeIn 0.3s ease-out forwards; }
+
+        .word-space { width: 16px; height: 56px; display: inline-block; flex-shrink: 0; }
     </style>
 </head>
 <body>
@@ -52,106 +55,106 @@
 
         // --- FULL DATABASE 100 CÂU HỎI ---
         const OFFLINE_DB = [
-            { id: 1, topic: "DÂN CA VIỆT NAM", question: "Bài hát nào có chú ngựa đứng cạnh chiếc ô?", answer: "NGUA O", hint: "Bắt đầu bằng 'Khớp con...'" },
-            { id: 2, topic: "THỂ THAO", question: "Quả gì mà lại nằm trên bàn thế này?", answer: "BONG BAN", hint: "Môn đánh qua lưới trên một cái bàn phẳng." },
-            { id: 3, topic: "DANH HIỆU SẮC ĐẸP", question: "Danh hiệu cao quý nhất dành cho phái đẹp trong cuộc thi là gì?", answer: "HOA HAU", hint: "Người chiến thắng sẽ được trao vương miện." },
-            { id: 4, topic: "CÔNG SỞ", question: "Việc bạn phải làm và gửi sếp vào cuối mỗi tháng?", answer: "BAO CAO", hint: "Văn bản tổng hợp tiến độ và kết quả công việc." },
-            { id: 5, topic: "ĐỜI SỐNG", question: "Thứ thường giăng đầy trên trần nhà hoặc góc tường cũ?", answer: "MANG NHEN", hint: "Loài vật 8 chân nhả tơ tạo ra thứ này." },
-            { id: 6, topic: "ĐỜI SỐNG", question: "Vật dụng dùng để đo đếm thời gian trôi qua mỗi ngày?", answer: "DONG HO", hint: "Vật có kim chỉ giờ, phút, giây." },
-            { id: 7, topic: "ĐỜI SỐNG", question: "Thứ đồ dùng không thể thiếu khi bạn tắm gội hàng ngày?", answer: "XA PHONG", hint: "Cục tạo ra nhiều bọt trắng để làm sạch cơ thể." },
-            { id: 8, topic: "THỰC VẬT", question: "Sự kết hợp giữa một loại ngũ cốc và một loại rau ăn lá?", answer: "BAP CAI", hint: "Ghép chữ Bắp (ngô) và Rau Cải." },
-            { id: 9, topic: "THỂ THAO", question: "Môn thể thao sử dụng vợt và một quả cầu có gắn lông vũ?", answer: "CAU LONG", hint: "Đánh quả cầu bay lượn qua lưới cao." },
-            { id: 10, topic: "ĐỜI SỐNG", question: "Trang phục bảo vệ bạn không bị ướt khi trời mưa giông?", answer: "AO MUA", hint: "Giúp bạn che mưa không bị ướt." },
-            { id: 11, topic: "CƠ KHÍ", question: "Bộ phận hình tròn có răng dùng để truyền động trong máy móc?", answer: "BANH RANG", hint: "Chi tiết máy móc hình tròn có nhiều răng cưa." },
-            { id: 12, topic: "GIA VỊ", question: "Loại hạt nhỏ có vị cay nồng, thường rắc lên món ăn cho thơm?", answer: "HAT TIEU", hint: "Gia vị màu đen, xay nhuyễn ăn rất thơm." },
-            { id: 13, topic: "THỰC PHẨM", question: "Tên gọi chung của các loại quả ăn được, giàu vitamin?", answer: "TRAI CAY", hint: "Cam, táo, xoài, ổi gọi chung là gì?" },
-            { id: 14, topic: "ĐỜI SỐNG", question: "Thứ giấy mỏng màu bạc thường dùng để bọc thực phẩm khi nướng?", answer: "GIAY BAC", hint: "Cuộn giấy kim loại màu sáng lấp lánh." },
-            { id: 15, topic: "MAY VÁ", question: "Bộ đôi dụng cụ luôn đi liền với nhau để khâu vá quần áo?", answer: "KIM CHI", hint: "Thứ để xâu sợi dây vào và may vá." },
-            { id: 16, topic: "CHÍNH TRỊ", question: "Hoạt động cạnh tranh để giành một vị trí lãnh đạo?", answer: "TRANH CU", hint: "Cạnh tranh bỏ phiếu." },
-            { id: 17, topic: "BẢO HỘ", question: "Vật dụng đeo vào tay để giữ ấm hoặc bảo vệ vân tay?", answer: "BAO TAY", hint: "Vật xỏ vào 5 ngón tay." },
-            { id: 18, topic: "THỂ THAO", question: "Loại giày chuyên dụng có các gai nhọn dưới đế của cầu thủ bóng đá?", answer: "GIAY DINH", hint: "Dưới đế có nhiều mấu nhọn để bám cỏ." },
+            { id: 1, topic: "DÂN CA VIỆT NAM", question: "Bài hát nào có chú ngựa đứng cạnh chiếc ô?", answer: "NGUA O", hint: "Bài hát dân ca miền Nam bắt đầu bằng 'Khớp con...'" },
+            { id: 2, topic: "THỂ THAO", question: "Quả gì mà lại nằm trên bàn thế này?", answer: "BONG BAN", hint: "Môn thể thao đánh qua lưới trên một cái mặt phẳng." },
+            { id: 3, topic: "DANH HIỆU SẮC ĐẸP", question: "Tên gọi của người thắng cuộc thi nhan sắc?", answer: "HOA HAU", hint: "Người đẹp nhất sẽ được đội vương miện." },
+            { id: 4, topic: "CÔNG SỞ", question: "Việc bạn phải làm vào cuối mỗi tháng?", answer: "BAO CAO", hint: "Văn bản tổng kết công việc gửi cho sếp." },
+            { id: 5, topic: "ĐỜI SỐNG", question: "Thứ thường giăng đầy góc tường cũ?", answer: "MANG NHEN", hint: "Loài vật 8 chân nhả tơ tạo ra thứ này." },
+            { id: 6, topic: "ĐỜI SỐNG", question: "Vật dụng đo đếm thời gian?", answer: "DONG HO", hint: "Vật có kim chỉ giờ, phút, giây." },
+            { id: 7, topic: "ĐỜI SỐNG", question: "Đồ dùng khi bạn tắm gội?", answer: "XA PHONG", hint: "Cục tạo ra nhiều bọt trắng để làm sạch." },
+            { id: 8, topic: "THỰC VẬT", question: "Ngũ cốc kết hợp rau ăn lá?", answer: "BAP CAI", hint: "Ghép chữ Bắp (ngô) và Rau Cải." },
+            { id: 9, topic: "THỂ THAO", question: "Môn dùng vợt và cầu lông vũ?", answer: "CAU LONG", hint: "Đánh quả cầu có cắm lông vũ qua lưới." },
+            { id: 10, topic: "ĐỜI SỐNG", question: "Trang phục mặc khi trời mưa?", answer: "AO MUA", hint: "Giúp bạn không bị ướt khi đi ngoài đường." },
+            { id: 11, topic: "CƠ KHÍ", question: "Bánh tròn có răng truyền động?", answer: "BANH RANG", hint: "Chi tiết máy móc hình tròn có nhiều răng cưa." },
+            { id: 12, topic: "GIA VỊ", question: "Hạt nhỏ vị cay nồng rắc lên món ăn?", answer: "HAT TIEU", hint: "Gia vị màu đen, xay nhuyễn ăn rất thơm." },
+            { id: 13, topic: "THỰC PHẨM", question: "Tên chung các loại quả ăn được?", answer: "TRAI CAY", hint: "Cam, táo, xoài, ổi gọi chung là gì?" },
+            { id: 14, topic: "ĐỜI SỐNG", question: "Giấy mỏng bọc thực phẩm nướng?", answer: "GIAY BAC", hint: "Cuộn giấy kim loại màu sáng lấp lánh." },
+            { id: 15, topic: "MAY VÁ", question: "Bộ đôi khâu vá quần áo?", answer: "KIM CHI", hint: "Thứ để xâu sợi dây vào và may vá." },
+            { id: 16, topic: "CHÍNH TRỊ", question: "Hoạt động giành vị trí lãnh đạo?", answer: "TRANH CU", hint: "Cạnh tranh để được bầu làm Tổng thống." },
+            { id: 17, topic: "BẢO HỘ", question: "Vật đeo tay giữ ấm hoặc bảo vệ?", answer: "BAO TAY", hint: "Vật xỏ vào 5 ngón tay." },
+            { id: 18, topic: "THỂ THAO", question: "Giày có gai nhọn của cầu thủ bóng đá?", answer: "GIAY DINH", hint: "Dưới đế có nhiều mấu nhọn để bám cỏ." },
             { id: 19, topic: "GIẢI PHẪU", question: "Tên một bộ phận lồi ra ở cổ chân?", answer: "MAT CA", hint: "Cục xương nhô ra ở hai bên cổ chân." },
-            { id: 20, topic: "ĐỜI SỐNG", question: "Trạng thái tâm lý bình yên, không có lo âu hay biến động?", answer: "YEN BINH", hint: "Bầu không khí tĩnh lặng, thanh bình." },
-            { id: 21, topic: "ĐỜI SỐNG", question: "Hành động cố tình gây đau đớn, khổ sở cho người khác?", answer: "HANH HA", hint: "Làm tình làm tội, tra tấn tinh thần/thể xác." },
-            { id: 22, topic: "Ý TƯỞNG", question: "Một ý kiến, giải pháp vô cùng thông minh và xuất sắc?", answer: "CAO KIEN", hint: "Một ý kiến xuất sắc, tuyệt vời." },
-            { id: 23, topic: "CÔNG SỞ", question: "Lời chào tạm biệt thanh lịch khi xin phép ra về?", answer: "CAO TU", hint: "Cách nói lịch sự khi tạm biệt ra về." },
-            { id: 24, topic: "GIẢI PHẪU", question: "Bộ phận xương bao quanh lồng ngực, rất dễ bị thọc lét?", answer: "MANG SUON", hint: "Phần sườn bên hông rất dễ bị chọc léc." },
-            { id: 25, topic: "KIẾN TRÚC", question: "Nơi trong căn phòng dùng để đón ánh sáng?", answer: "CUA SO", hint: "Cánh cửa nhỏ trên tường nhìn ra ngoài." },
-            { id: 26, topic: "NGHỀ NGHIỆP", question: "Công việc sáng tạo ra bản vẽ, hình dáng của một sản phẩm?", answer: "THIET KE", hint: "Công việc vẽ ra hình mẫu trước khi làm." },
-            { id: 27, topic: "ĐỜI SỐNG", question: "Lối sống, làm việc luôn tuân thủ theo đúng nề nếp?", answer: "QUY CU", hint: "Người sống rất nề nếp, khuôn phép." },
-            { id: 28, topic: "ĐÈN", question: "Vật dụng dùng để chiếu sáng, thường được thắp bằng dầu hoặc nến thời xưa?", answer: "DEN LONG", hint: "Thứ cầm đi chơi tết Trung thu." },
-            { id: 29, topic: "TÍNH CÁCH", question: "Từ dùng để chỉ vẻ ngoài được chải chuốt, làm đẹp quá mức?", answer: "BONG BAY", hint: "Làm dáng, ăn mặc mượt mà lấp lánh." },
-            { id: 30, topic: "THÀNH NGỮ", question: "Hệ thống pháp luật vô hình mang tính nhân quả?", answer: "LUOI TROI", hint: "Lưới của ông trời lồng lộng thưa khó lọt." },
-            { id: 31, topic: "THÀNH NGỮ", question: "Hành động cố công khuyên bảo một kẻ bảo thủ?", answer: "DAN GAY TAI TRAU", hint: "Đánh đàn cho con vật có sừng nghe." },
-            { id: 32, topic: "THÀNH NGỮ", question: "Sự tỏ vẻ thương xót, đau buồn nhưng thực chất là giả tạo?", answer: "NUOC MAT CA SAU", hint: "Giọt lệ của loài bò sát mõm dài." },
-            { id: 33, topic: "THÀNH NGỮ", question: "Hành động hãm hại người khác một cách lén lút?", answer: "NEM DA GIAU TAY", hint: "Quăng cục đá xong giấu tay đi." },
-            { id: 34, topic: "THÀNH NGỮ", question: "Tình huống mưu hại người khác nhưng lại tự hại chính mình?", answer: "GAY ONG DAP LUNG ONG", hint: "Lấy gậy của người đó đánh lại chính họ." },
-            { id: 35, topic: "THÀNH NGỮ", question: "Hành động lợi dụng lúc tình hình lộn xộn để trục lợi?", answer: "DUC NUOC BEO CO", hint: "Nước đục thì loài chim mỏ dài dễ bắt cá." },
-            { id: 36, topic: "TỪ LÓNG", question: "Trạng thái khi bạn sắp phải đối mặt với nguy cơ bị xử lý?", answer: "LEN THOT", hint: "Chuẩn bị bị mang ra làm thịt." },
-            { id: 37, topic: "THÀNH NGỮ", question: "Lời cảnh báo rằng một khi đã viết xuống thì không thể rút lại?", answer: "BUT SA GA CHET", hint: "Mực đã rơi xuống giấy thì không sửa được." },
-            { id: 38, topic: "TÍNH CÁCH", question: "Thái độ sống phũ phàng, bạc tình, quên đi ơn nghĩa?", answer: "BAC BEO", hint: "Bạc tình, tệ bạc với người từng giúp mình." },
-            { id: 39, topic: "THỰC VẬT", question: "Một loại quả có vị đắng đặc trưng?", answer: "KHO QUA", hint: "Tên gọi khác của trái Mướp đắng." },
-            { id: 40, topic: "TÌNH CẢM", question: "Nơi một người đã trải qua rất nhiều mối tình?", answer: "TINH TRUONG", hint: "Chiến trường của tình yêu." },
-            { id: 41, topic: "TÍNH CÁCH", question: "Đức tính thật tâm, chân thành, không một chút dối trá?", answer: "CHAN THANH", hint: "Sống rất thật lòng, không dối." },
-            { id: 42, topic: "TÍNH CÁCH", question: "Phong thái làm việc và cư xử một cách đàng hoàng?", answer: "DUNG DAN", hint: "Đứng đắn, chững chạc." },
-            { id: 43, topic: "NGHỆ THUẬT", question: "Thể loại sân khấu kịch dùng tiếng cười để phê phán?", answer: "HAI KICH", hint: "Vở diễn mang lại tiếng cười cho khán giả." },
-            { id: 44, topic: "KIẾN TRÚC", question: "Một tên gọi dân dã khác của nhà vệ sinh ngày xưa?", answer: "CAU TIEU", hint: "Cây cầu bắc qua ao chuôm thời xưa." },
-            { id: 45, topic: "ĐỜI SỐNG", question: "Tiếng rên rỉ, khóc lóc kể lể nỗi khổ tâm?", answer: "THAN KHOC", hint: "Khóc lóc và than vãn." },
-            { id: 46, topic: "GIẢI PHẪU", question: "Từ chỉ tâm tư, tấm lòng ẩn sâu bên trong con người?", answer: "LONG DA", hint: "Lòng dạ con người." },
-            { id: 47, topic: "THÀNH NGỮ", question: "Lời cảnh báo những lời ngon ngọt thường chứa bẫy rập?", answer: "MAT NGOT CHET RUOI", hint: "Thứ chất lỏng làm bầy ruồi bu vào chết." },
-            { id: 48, topic: "CẢM XÚC", question: "Cảm giác bên trong trống trơn, không có kiến thức gì?", answer: "TRONG RONG", hint: "Cảm giác không có gì bên trong." },
-            { id: 49, topic: "THÀNH NGỮ", question: "Kẻ cơ hội, luôn thay đổi lập trường theo hướng có lợi?", answer: "GIO CHIEU NAO CHE CHIEU AY", hint: "Gió thổi hướng nào xoay ô che hướng đó." },
-            { id: 50, topic: "THÀNH NGỮ", question: "Từ miêu tả những hạng người lăng nhăng, không đàng hoàng?", answer: "MEO MA GA DONG", hint: "Mèo hoang và Gà lang thang." },
-            { id: 51, topic: "Ý THỨC", question: "Những hiểu biết, trải nghiệm tích lũy được qua học hành?", answer: "KIEN THUC", hint: "Kho tàng chữ nghĩa thu thập được." },
-            { id: 52, topic: "TÌNH CẢM", question: "Hành động yêu hai người cùng một lúc?", answer: "BAT CA HAI TAY", hint: "Hai tay bắt hai con cá." },
-            { id: 53, topic: "SINH HỌC", question: "Nơi ghi danh các loài động vật hoang dã quý hiếm?", answer: "SACH DO", hint: "Quyển sách có bìa màu đỏ." },
-            { id: 54, topic: "NHẠC CỤ", question: "Một loại nhạc cụ dân tộc Việt Nam chỉ có duy nhất một dây?", answer: "DAN BAU", hint: "Cây đàn làm từ vỏ quả bầu." },
-            { id: 55, topic: "CẢM XÚC", question: "Cảm giác bàng hoàng, kinh ngạc tột độ trước một tin tức?", answer: "CU SOC", hint: "Giống như bị điện giật." },
-            { id: 56, topic: "KIẾN TRÚC", question: "Nơi chôn cất và đắp đất cao lên của người đã khuất?", answer: "NAM MO", hint: "Gò đất nhô lên ngoài nghĩa trang." },
-            { id: 57, topic: "HÀNH CHÍNH", question: "Hành động tự nguyện đến cơ quan công an trình diện?", answer: "DAU THU", hint: "Tội phạm tự ra đồn nộp mình." },
-            { id: 58, topic: "GIẢI PHẪU", question: "Phần tóc mảnh mọc ở hai bên thái dương, sát vành tai?", answer: "TOC MAI", hint: "Phần tóc mọc sát mang tai." },
-            { id: 59, topic: "THÀNH NGỮ", question: "Miệng thì nói lời từ bi nhưng lòng dạ lại độc ác nham hiểm?", answer: "KHAU PHAT TAM XA", hint: "Khẩu phật tâm xà." },
-            { id: 60, topic: "THÀNH NGỮ", question: "Kẻ ít hiểu biết nhưng lại rất hay khoe khoang?", answer: "THUNG RONG KEU TO", hint: "Cái thùng không có gì gõ vào tiếng rất to." },
-            { id: 61, topic: "THÀNH NGỮ", question: "Cách nói ẩn ý, xa xôi, châm chọc?", answer: "BONG GIO", hint: "Nói mỉa mai qua cái bóng và cơn gió." },
-            { id: 62, topic: "Y HỌC", question: "Loại kính chuyên dụng dành cho người gặp khó khăn khi nhìn xa?", answer: "KINH CAN" , hint: "Kính dành cho người cận thị." },
-            { id: 63, topic: "TỪ LÓNG", question: "Hành động thay đổi thái độ nhanh chóng?", answer: "LAT MAT", hint: "Hành động lật ngửa khuôn mặt lại." },
-            { id: 64, topic: "ẨM THỰC", question: "Món giải khát bình dân mùa hè được làm từ đá nhuyễn?", answer: "DA BAO", hint: "Cục nước đá bào ra rưới si-rô." },
-            { id: 65, topic: "TỪ LÓNG", question: "Trạng thái khóc ròng khi chiếc ví tiền trống rỗng?", answer: "CHAY TUI", hint: "Cái túi đang bốc hỏa." },
-            { id: 66, topic: "TỪ LÓNG", question: "Từ chỉ những kẻ côn đồ, hung hãn?", answer: "DAU GAU", hint: "Cái đầu của con gấu." },
-            { id: 67, topic: "TỪ LÓNG", question: "Từ khóa quốc dân chỉ những thanh niên nông nổi, háo thắng?", answer: "TRE TRAU", hint: "Cậu bé chăn con trâu." },
-            { id: 68, topic: "TỪ LÓNG", question: "Cụm từ cửa miệng của Gen Z dùng để than vãn khi gặp chuyện xui?", answer: "XU CA NA", hint: "Ghép chữ xui xẻo và quả cà na." },
-            { id: 69, topic: "TỪ LÓNG", question: "Cảm giác hoang mang, lung lay, không an tâm?", answer: "BAT ON", hint: "Trạng thái không hề ổn chút nào." },
-            { id: 70, topic: "TỪ LÓNG", question: "Kẻ chuyên đi phá hoại, gây họa hoặc làm hỏng việc?", answer: "BAO THU", hint: "Loài thú ăn thịt thích báo hại." },
-            { id: 71, topic: "ẨM THỰC", question: "Một món ăn bình dân bỗng trở thành từ khóa drama chấn động?", answer: "LONG XAO DUA", hint: "Lòng heo xào với dưa chua." },
-            { id: 72, topic: "TỪ LÓNG", question: "Hành động vô tri, lạnh nhạt hoặc một câu đùa nhạt nhẽo?", answer: "CAM LANH", hint: "Một căn bệnh mùa đông: Cảm lạnh." },
-            { id: 73, topic: "TỪ LÓNG", question: "Tình huống cực kỳ rắc rối khiến đầu óc xoắn não?", answer: "GAY LU", hint: "Khiến não bộ bị lú lẫn." },
-            { id: 74, topic: "TÀI NGUYÊN", question: "Loại nhiên liệu hóa thạch quý hiếm, ví như vàng đen?", answer: "DAU MO", hint: "Chất lỏng màu đen bơm từ dưới lòng đất." },
-            { id: 75, topic: "TÌNH CẢM", question: "Người tình đích thực, định mệnh của cuộc đời?", answer: "CHAN AI", hint: "Tình yêu chân thật của đời người." },
-            { id: 76, topic: "TỪ LÓNG", question: "Hành động gánh vác, đưa cả đội đi đến chiến thắng?", answer: "GANH TEAM", hint: "Dùng đòn gánh cõng cả team lên." },
-            { id: 77, topic: "TỪ LÓNG", question: "Cụm từ hot trend bắt nguồn từ một hiện tượng mạng xã hội múa võ?", answer: "DI DUONG QUYEN", hint: "Múa một đường quyền biểu diễn." },
-            { id: 78, topic: "TỪ LÓNG", question: "Hành động tìm kiếm người yêu trên ứng dụng hẹn hò?", answer: "QUET TINDER", hint: "Vuốt màn hình trên app hẹn hò." },
-            { id: 79, topic: "TỪ LÓNG", question: "Hành động quay ngoắt 180 độ, hủy bỏ quyết định?", answer: "QUAY XE", hint: "Vòng vô-lăng xe quay lại." },
-            { id: 80, topic: "TỪ LÓNG", question: "Trạng thái bị người khác vùi dập, làm cho khốn đốn?", answer: "AN HANH", hint: "Bị bắt phải nhai củ hành tây." },
-            { id: 81, topic: "KINH TẾ", question: "Hành vi đẩy giá trị sản phẩm lên mức ảo tưởng?", answer: "NGAO GIA", hint: "Trạng thái ngáo ngơ vì giá quá ảo." },
-            { id: 82, topic: "KINH TẾ", question: "Chiêu trò đầu cơ thổi phồng giá trị bất động sản?", answer: "THOI GIA", hint: "Dùng miệng thổi giá lên cao." },
-            { id: 83, topic: "TÌNH CẢM", question: "Hành vi lén lút phản bội người yêu?", answer: "CAM SUNG", hint: "Bị mọc thêm hai cái sừng trên đầu." },
-            { id: 84, topic: "TÌNH CẢM", question: "Nỗi đau của người đến sau phải gánh vác hậu quả?", answer: "DO VO", hint: "Thu dọn vỏ ốc, đổ rác." },
-            { id: 85, topic: "ĐẦU TƯ", question: "Sai lầm kinh điển khi mua tiền ảo đúng lúc giá cao chót vót?", answer: "DU DINH", hint: "Treo mình lơ lửng trên ngọn núi." },
-            { id: 86, topic: "ĐẦU TƯ", question: "Kỳ thuật canh đúng thời điểm giá xuống thấp nhất để mua?", answer: "BAT DAY", hint: "Thò tay vớt ở dưới đáy giếng." },
-            { id: 87, topic: "TỪ LÓNG", question: "Chiêu trò lừa gạt những người thiếu kinh nghiệm?", answer: "LUA GA", hint: "Dùng chổi lùa bầy gà con." },
-            { id: 88, topic: "TỪ LÓNG", question: "Hành vi xả bán tài sản gấp lên đầu người khác?", answer: "UP BO", hint: "Lấy cái bô chụp lên đầu." },
-            { id: 89, topic: "Y HỌC", question: "Căn bệnh tâm lý thời hiện đại khiến con người trầm uất?", answer: "TRAM CAM", hint: "Khúc gỗ trầm hương chìm xuống biển." },
-            { id: 90, topic: "TỪ LÓNG", question: "Từ dùng để khen ngợi một hành động dũng cảm, trượng nghĩa?", answer: "HAO HAN", hint: "Anh hùng lương sơn." },
-            { id: 91, topic: "TỪ LÓNG", question: "Cụm từ chỉ vị trí tồi tệ, nghèo khổ nhất trong phân tầng?", answer: "DAY XA HOI", hint: "Nơi bẩn nhất của xã hội." },
-            { id: 92, topic: "KIẾN TRÚC", question: "Nơi hoàn toàn khuất ánh sáng, bao phủ bởi màu đen?", answer: "BONG TOI", hint: "Nơi ánh sáng không chiếu tới." },
-            { id: 93, topic: "TRIẾT HỌC", question: "Sự thật khách quan luôn luôn đúng đắn?", answer: "CHAN LY", hint: "Chân lý chiếu sáng." },
-            { id: 94, topic: "TỪ LÓNG", question: "Biệt danh dành cho những con người thức xuyên đêm?", answer: "CU DEM", hint: "Loài chim có đôi mắt to hay kêu ban đêm." },
-            { id: 95, topic: "TỪ LÓNG", question: "Từ khóa hot trend miêu tả những phát ngôn vô tri?", answer: "XA LER", hint: "Nói xà lơ." },
-            { id: 96, topic: "TỪ LÓNG", question: "Cụm từ chỉ những hành động làm quá lố?", answer: "O DE", hint: "Ô dề." },
-            { id: 97, topic: "TỪ LÓNG", question: "Từ lóng dùng để khen ngợi một món ăn ngon?", answer: "MLEM", hint: "Tiếng liếm mép vì thèm ăn." },
-            { id: 98, topic: "TỪ LÓNG", question: "Từ chỉ hành động phá phách, mang lại tai họa?", answer: "BAO DOI", hint: "Báo đời báo hại." },
-            { id: 99, topic: "QUANG HỌC", question: "Hiện tượng vật lý dội ngược lại các tia sáng?", answer: "PHAN QUANG", hint: "Hiện tượng phản xạ." },
-            { id: 100, topic: "CẢNH GIỚI", question: "Từ dùng để miêu tả chính chất lượng đồ họa của trò chơi?", answer: "DANG CAP", hint: "Sự VIP nhất." }
+            { id: 20, topic: "ĐỜI SỐNG", question: "Trạng thái bình yên, không lo âu?", answer: "YEN BINH", hint: "Bầu không khí tĩnh lặng, thanh bình." },
+            { id: 21, topic: "ĐỜI SỐNG", question: "Hành động cố tình gây đau đớn người khác?", answer: "HANH HA", hint: "Làm tình làm tội, tra tấn tinh thần/thể xác." },
+            { id: 22, topic: "Ý TƯỞNG", question: "Giải pháp vô cùng thông minh?", answer: "CAO KIEN", hint: "Một ý kiến xuất sắc, sáng suốt." },
+            { id: 23, topic: "CÔNG SỞ", question: "Lời chào khi xin phép ra về?", answer: "CAO TU", hint: "Cách nói lịch sự khi tạm biệt để đi về." },
+            { id: 24, topic: "GIẢI PHẪU", question: "Xương bao quanh lồng ngực?", answer: "MANG SUON", hint: "Phần sườn bên hông rất dễ bị chọc léc." },
+            { id: 25, topic: "KIẾN TRÚC", question: "Nơi trong phòng đón ánh sáng?", answer: "CUA SO", hint: "Cánh cửa nhỏ trên tường để nhìn ra ngoài." },
+            { id: 26, topic: "NGHỀ NGHIỆP", question: "Sáng tạo bản vẽ hình dáng sản phẩm?", answer: "THIET KE", hint: "Công việc vẽ ra hình mẫu trước khi xây dựng." },
+            { id: 27, topic: "ĐỜI SỐNG", question: "Lối sống tuân thủ nề nếp?", answer: "QUY CU", hint: "Người sống rất nề nếp, khuôn phép." },
+            { id: 28, topic: "ĐÈN", question: "Vật dụng thắp sáng bằng nến thời xưa?", answer: "DEN LONG", hint: "Chiếc lồng màu đỏ thắp nến dịp Trung Thu." },
+            { id: 29, topic: "TÍNH CÁCH", question: "Vẻ ngoài chải chuốt quá mức?", answer: "BONG BAY", hint: "Làm dáng, ăn mặc mượt mà lấp lánh." },
+            { id: 30, topic: "THÀNH NGỮ", question: "Hệ thống pháp luật vô hình?", answer: "LUOI TROI", hint: "Lưới của ông trời lồng lộng thưa khó lọt." },
+            { id: 31, topic: "THÀNH NGỮ", question: "Khuyên bảo kẻ bảo thủ?", answer: "DAN GAY TAI TRAU", hint: "Đánh đàn cho con vật có sừng nghe." },
+            { id: 32, topic: "THÀNH NGỮ", question: "Thương xót giả tạo?", answer: "NUOC MAT CA SAU", hint: "Giọt lệ của loài bò sát mõm dài." },
+            { id: 33, topic: "THÀNH NGỮ", question: "Hãm hại người khác lén lút?", answer: "NEM DA GIAU TAY", hint: "Quăng cục đá xong giấu tay đi." },
+            { id: 34, topic: "THÀNH NGỮ", question: "Mưu hại người tự hại mình?", answer: "GAY ONG DAP LUNG ONG", hint: "Lấy gậy của người đó đánh lại chính họ." },
+            { id: 35, topic: "THÀNH NGỮ", question: "Lợi dụng lúc lộn xộn trục lợi?", answer: "DUC NUOC BEO CO", hint: "Nước đục thì loài chim mỏ dài dễ bắt cá." },
+            { id: 36, topic: "TỪ LÓNG", question: "Sắp phải đối mặt nguy cơ bị xử lý?", answer: "LEN THOT", hint: "Chuẩn bị bị mang ra làm thịt." },
+            { id: 37, topic: "THÀNH NGỮ", question: "Viết xuống không thể rút lại?", answer: "BUT SA GA CHET", hint: "Mực đã rơi xuống giấy thì không sửa được." },
+            { id: 38, topic: "TÍNH CÁCH", question: "Sống phũ phàng quên ơn nghĩa?", answer: "BAC BEO", hint: "Bạc tình, tệ bạc với người từng giúp mình." },
+            { id: 39, topic: "THỰC VẬT", question: "Quả có vị đắng đặc trưng?", answer: "KHO QUA", hint: "Tên gọi khác của trái Mướp đắng." },
+            { id: 40, topic: "TÌNH CẢM", question: "Nơi trải qua nhiều mối tình?", answer: "TINH TRUONG", hint: "Thương trường, chiến trường và...?" },
+            { id: 41, topic: "TÍNH CÁCH", question: "Thật tâm chân thành?", answer: "CHAN THANH", hint: "Sống rất thật lòng, không dối trá." },
+            { id: 42, topic: "TÍNH CÁCH", question: "Cư xử đàng hoàng?", answer: "DUNG DAN", hint: "Đứng đắn, chững chạc." },
+            { id: 43, topic: "NGHỆ THUẬT", question: "Kịch dùng tiếng cười phê phán?", answer: "HAI KICH", hint: "Vở diễn mang lại tiếng cười cho khán giả." },
+            { id: 44, topic: "KIẾN TRÚC", question: "Nhà vệ sinh ngày xưa?", answer: "CAU TIEU", hint: "Cây cầu bắc qua ao chuôm thời xưa." },
+            { id: 45, topic: "ĐỜI SỐNG", question: "Tiếng rên rỉ khổ tâm?", answer: "THAN KHOC", hint: "Khóc lóc và than vãn." },
+            { id: 46, topic: "GIẢI PHẪU", question: "Tâm tư ẩn sâu con người?", answer: "LONG DA", hint: "Lòng và dạ dày, chỉ tâm địa con người." },
+            { id: 47, topic: "THÀNH NGỮ", question: "Lời ngon ngọt chứa bẫy?", answer: "MAT NGOT CHET RUOI", hint: "Thứ chất lỏng làm bầy ruồi bu vào chết." },
+            { id: 48, topic: "CẢM XÚC", question: "Bên trong trống trơn không kiến thức?", answer: "TRONG RONG", hint: "Cảm giác không có gì bên trong đầu." },
+            { id: 49, topic: "THÀNH NGỮ", question: "Kẻ thay đổi lập trường theo hướng lợi?", answer: "GIO CHIEU NAO CHE CHIEU AY", hint: "Gió thổi hướng nào thì xoay ô che hướng đó." },
+            { id: 50, topic: "THÀNH NGỮ", question: "Hạng người không đàng hoàng?", answer: "MEO MA GA DONG", hint: "Mèo hoang và Gà lang thang." },
+            { id: 51, topic: "Ý THỨC", question: "Hiểu biết qua học hành?", answer: "KIEN THUC", hint: "Kho tàng chữ nghĩa thu thập được." },
+            { id: 52, topic: "TÌNH CẢM", question: "Yêu hai người một lúc?", answer: "BAT CA HAI TAY", hint: "Hai tay tóm hai con cá cùng lúc." },
+            { id: 53, topic: "SINH HỌC", question: "Nơi ghi danh động vật quý hiếm?", answer: "SACH DO", hint: "Quyển sách có bìa màu đỏ." },
+            { id: 54, topic: "NHẠC CỤ", question: "Nhạc cụ dân tộc có 1 dây?", answer: "DAN BAU", hint: "Cây đàn làm từ vỏ quả bầu." },
+            { id: 55, topic: "CẢM XÚC", question: "Bàng hoàng trước tin tức?", answer: "CU SOC", hint: "Giống như bị điện giật." },
+            { id: 56, topic: "KIẾN TRÚC", question: "Nơi chôn cất người đã khuất?", answer: "NAM MO", hint: "Gò đất nhô lên ngoài nghĩa trang." },
+            { id: 57, topic: "HÀNH CHÍNH", question: "Tự nguyện trình diện công an?", answer: "DAU THU", hint: "Tội phạm tự ra đồn nộp mình." },
+            { id: 58, topic: "GIẢI PHẪU", question: "Tóc mảnh hai bên thái dương?", answer: "TOC MAI", hint: "Phần tóc mọc sát mang tai." },
+            { id: 59, topic: "THÀNH NGỮ", question: "Miệng từ bi lòng độc ác?", answer: "KHAU PHAT TAM XA", hint: "Khẩu phật tâm xà." },
+            { id: 60, topic: "THÀNH NGỮ", question: "Ít hiểu biết hay khoe khoang?", answer: "THUNG RONG KEU TO", hint: "Cái thùng không có gì gõ vào tiếng rất to." },
+            { id: 61, topic: "THÀNH NGỮ", question: "Cách nói ẩn ý châm chọc?", answer: "BONG GIO", hint: "Nói mỉa mai qua cái bóng và cơn gió." },
+            { id: 62, topic: "Y HỌC", question: "Kính dành cho người khó nhìn xa?", answer: "KINH CAN" , hint: "Kính dành cho người bị cận thị." },
+            { id: 63, topic: "TỪ LÓNG", question: "Thay đổi thái độ nhanh chóng?", answer: "LAT MAT", hint: "Hành động lật ngửa khuôn mặt lại." },
+            { id: 64, topic: "ẨM THỰC", question: "Món làm từ đá nhuyễn mùa hè?", answer: "DA BAO", hint: "Cục nước đá bào ra rưới si-rô." },
+            { id: 65, topic: "TỪ LÓNG", question: "Ví tiền trống rỗng?", answer: "CHAY TUI", hint: "Cái túi đang bốc hỏa." },
+            { id: 66, topic: "TỪ LÓNG", question: "Kẻ côn đồ hung hãn?", answer: "DAU GAU", hint: "Cái đầu của con gấu." },
+            { id: 67, topic: "TỪ LÓNG", question: "Thanh niên nông nổi?", answer: "TRE TRAU", hint: "Cậu bé chăn con trâu." },
+            { id: 68, topic: "TỪ LÓNG", question: "Gen Z than vãn khi xui?", answer: "XU CA NA", hint: "Ghép chữ xui xẻo và quả cà na." },
+            { id: 69, topic: "TỪ LÓNG", question: "Hoang mang không an tâm?", answer: "BAT ON", hint: "Trạng thái không hề ổn chút nào." },
+            { id: 70, topic: "TỪ LÓNG", question: "Kẻ chuyên gây họa?", answer: "BAO THU", hint: "Loài báo đốm thích báo hại." },
+            { id: 71, topic: "ẨM THỰC", question: "Món ăn drama chấn động?", answer: "LONG XAO DUA", hint: "Lòng heo xào với dưa chua." },
+            { id: 72, topic: "TỪ LÓNG", question: "Hành động lạnh nhạt?", answer: "CAM LANH", hint: "Một căn bệnh mùa đông: Cảm..." },
+            { id: 73, topic: "TỪ LÓNG", question: "Tình huống rắc rối xoắn não?", answer: "GAY LU", hint: "Khiến não bộ bị lú lẫn." },
+            { id: 74, topic: "TÀI NGUYÊN", question: "Nhiên liệu hóa thạch quý?", answer: "DAU MO", hint: "Chất lỏng màu đen bơm từ dưới lòng đất." },
+            { id: 75, topic: "TÌNH CẢM", question: "Người tình định mệnh?", answer: "CHAN AI", hint: "Tình yêu chân thật của đời người." },
+            { id: 76, topic: "TỪ LÓNG", question: "Gánh vác đưa đội chiến thắng?", answer: "GANH TEAM", hint: "Dùng đòn gánh cõng cả team lên." },
+            { id: 77, topic: "TỪ LÓNG", question: "Hot trend múa võ?", answer: "DI DUONG QUYEN", hint: "Múa một đường quyền biểu diễn." },
+            { id: 78, topic: "TỪ LÓNG", question: "Tìm người yêu trên app?", answer: "QUET TINDER", hint: "Vuốt màn hình trên app hẹn hò." },
+            { id: 79, topic: "TỪ LÓNG", question: "Quay ngoắt hủy quyết định?", answer: "QUAY XE", hint: "Vòng vô-lăng xe quay lại." },
+            { id: 80, topic: "TỪ LÓNG", question: "Bị người khác vùi dập?", answer: "AN HANH", hint: "Bị bắt phải nhai củ hành tây." },
+            { id: 81, topic: "KINH TẾ", question: "Đẩy giá ảo tưởng?", answer: "NGAO GIA", hint: "Trạng thái ngáo ngơ vì giá quá ảo." },
+            { id: 82, topic: "KINH TẾ", question: "Thổi phồng bất động sản?", answer: "THOI GIA", hint: "Dùng miệng thổi giá lên cao." },
+            { id: 83, topic: "TÌNH CẢM", question: "Phản bội người yêu?", answer: "CAM SUNG", hint: "Bị mọc thêm hai cái sừng trên đầu." },
+            { id: 84, topic: "TÌNH CẢM", question: "Nỗi đau gánh vác hậu quả?", answer: "DO VO", hint: "Thu dọn vỏ ốc, vỏ ốc đổ rác." },
+            { id: 85, topic: "ĐẦU TƯ", question: "Mua tiền ảo giá đỉnh?", answer: "DU DINH", hint: "Treo mình lơ lửng trên ngọn núi." },
+            { id: 86, topic: "ĐẦU TƯ", question: "Mua đúng giá thấp nhất?", answer: "BAT DAY", hint: "Thò tay vớt ở dưới đáy giếng." },
+            { id: 87, topic: "TỪ LÓNG", question: "Lừa người thiếu kinh nghiệm?", answer: "LUA GA", hint: "Dùng chổi lùa bầy gà con." },
+            { id: 88, topic: "TỪ LÓNG", question: "Xả tài sản lên đầu người khác?", answer: "UP BO", hint: "Lấy cái bô chụp lên đầu." },
+            { id: 89, topic: "Y HỌC", question: "Bệnh tâm lý trầm uất?", answer: "TRAM CAM", hint: "Khúc gỗ trầm hương chìm xuống biển." },
+            { id: 90, topic: "TỪ LÓNG", question: "Khen hành động dũng cảm?", answer: "HAO HAN", hint: "Tên một vị anh hùng lương sơn." },
+            { id: 91, topic: "TỪ LÓNG", question: "Vị trí tồi tệ phân tầng?", answer: "DAY XA HOI", hint: "Nơi bẩn nhất của xã hội." },
+            { id: 92, topic: "KIẾN TRÚC", question: "Nơi hoàn toàn khuất sáng?", answer: "BONG TOI", hint: "Nơi ánh sáng không chiếu tới." },
+            { id: 93, topic: "TRIẾT HỌC", question: "Sự thật luôn đúng?", answer: "CHAN LY", hint: "Chân lý chiếu sáng mười phương." },
+            { id: 94, topic: "TỪ LÓNG", question: "Người thức xuyên đêm?", answer: "CU DEM", hint: "Loài chim có đôi mắt to hay kêu ban đêm." },
+            { id: 95, topic: "TỪ LÓNG", question: "Hot trend phát ngôn vô tri?", answer: "XA LER", hint: "Xà lơ." },
+            { id: 96, topic: "TỪ LÓNG", question: "Hành động làm quá lố?", answer: "O DE", hint: "Ô dề." },
+            { id: 97, topic: "TỪ LÓNG", question: "Khen món ăn ngon?", answer: "MLEM", hint: "Tiếng liếm mép vì thèm ăn." },
+            { id: 98, topic: "TỪ LÓNG", question: "Hành động phá phách?", answer: "BAO DOI", hint: "Báo đời báo hại." },
+            { id: 99, topic: "QUANG HỌC", question: "Tia sáng dội ngược lại?", answer: "PHAN QUANG", hint: "Hiện tượng phản xạ ánh sáng." },
+            { id: 100, topic: "CẢNH GIỚI", question: "Chất lượng đồ họa game?", answer: "DANG CAP", hint: "Từ thể hiện sự tuyệt vời, VIP nhất." }
         ];
 
         const VIETNAMESE_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -205,8 +208,8 @@
             
             const [levelData, setLevelData] = useState(null);
             
-            // Xử lý Đáp án dưới dạng mảng các từ
-            const [answerWords, setAnswerWords] = useState([]); 
+            // --- FIX LỖI: SỬ DỤNG MẢNG 1 CHIỀU CHO ANSWER SLOTS ---
+            const [answerSlots, setAnswerSlots] = useState([]); 
             
             const [availableLetters, setAvailableLetters] = useState([]);
             
@@ -253,61 +256,48 @@
             const initLevel = (lvlObj) => {
                 setLevelData(lvlObj);
                 
-                const wordsArray = lvlObj.answer.split(' ');
+                // Khởi tạo slots (Mảng 1 chiều)
+                const slots = [];
+                for (let i = 0; i < lvlObj.answer.length; i++) {
+                    if (lvlObj.answer[i] === ' ') {
+                        slots.push({ type: 'space', char: ' ' });
+                    } else {
+                        slots.push({ type: 'slot', char: null, letterObj: null });
+                    }
+                }
                 
-                const formattedWords = wordsArray.map((word, wordIndex) => {
-                    return word.split('').map((char, charIndex) => ({
-                        wordIndex: wordIndex,
-                        charIndex: charIndex,
-                        char: null,
-                        letterObj: null
-                    }));
-                });
-
-                setAnswerWords(formattedWords);
+                setAnswerSlots(slots);
                 setAvailableLetters(generateKeyboard(lvlObj.answer));     
                 setIsVictory(false); setIsWrong(false); setHintStage(0); 
             };
 
+            // --- FIX LỖI TẠI ĐÂY: LOGIC NHẬP CHỮ ---
             const handleLetterClick = (letterObj) => {
                 if (letterObj.isUsed || isVictory) return;
                 playSound('click'); setIsWrong(false);
                 
-                let targetWordIndex = -1;
-                let targetCharIndex = -1;
+                // Tìm vị trí trống (slot) đầu tiên
+                const firstEmptyIndex = answerSlots.findIndex(s => s.type === 'slot' && s.char === null);
                 
-                for (let i = 0; i < answerWords.length; i++) {
-                    const emptyCharIndex = answerWords[i].findIndex(slot => slot.char === null);
-                    if (emptyCharIndex !== -1) {
-                        targetWordIndex = i;
-                        targetCharIndex = emptyCharIndex;
-                        break;
-                    }
-                }
-
-                if (targetWordIndex !== -1) {
-                    const newAnswerWords = [...answerWords];
-                    const newWord = [...newAnswerWords[targetWordIndex]];
-                    newWord[targetCharIndex] = { ...newWord[targetCharIndex], char: letterObj.char, letterObj: letterObj };
-                    newAnswerWords[targetWordIndex] = newWord;
+                if (firstEmptyIndex !== -1) {
+                    const newSlots = [...answerSlots];
+                    newSlots[firstEmptyIndex] = { ...newSlots[firstEmptyIndex], char: letterObj.char, letterObj: letterObj };
+                    setAnswerSlots(newSlots);
                     
-                    setAnswerWords(newAnswerWords);
                     setAvailableLetters(availableLetters.map(l => l.id === letterObj.id ? { ...l, isUsed: true } : l));
                 }
             };
 
-            const handleSlotClick = (wordIndex, charIndex) => {
-                const slotItem = answerWords[wordIndex][charIndex];
-                if (slotItem.char !== null && !isVictory) {
+            const handleSlotClick = (index) => {
+                const slot = answerSlots[index];
+                if (slot.type === 'slot' && slot.char !== null && !isVictory) {
                     playSound('click'); setIsWrong(false);
-                    const letterObj = slotItem.letterObj;
+                    const letterObj = slot.letterObj;
                     
-                    const newAnswerWords = [...answerWords];
-                    const newWord = [...newAnswerWords[wordIndex]];
-                    newWord[charIndex] = { ...newWord[charIndex], char: null, letterObj: null };
-                    newAnswerWords[wordIndex] = newWord;
+                    const newSlots = [...answerSlots];
+                    newSlots[index] = { ...newSlots[index], char: null, letterObj: null };
+                    setAnswerSlots(newSlots);
                     
-                    setAnswerWords(newAnswerWords);
                     setAvailableLetters(availableLetters.map(l => l.id === letterObj.id ? { ...l, isUsed: false } : l));
                 }
             };
@@ -325,10 +315,9 @@
             const saveProgress = (newCoins, newLevelId) => { localStorage.setItem('dc_coins', newCoins); localStorage.setItem('dc_level', newLevelId); };
 
             useEffect(() => {
-                const isFull = answerWords.every(word => word.every(slot => slot.char !== null));
-                if (isFull && answerWords.length > 0) {
-                    const currentAnswer = answerWords.map(word => word.map(slot => slot.char).join('')).join(' ');
-                    
+                const isFull = answerSlots.filter(s => s.type === 'slot').every(s => s.char !== null);
+                if (isFull && answerSlots.filter(s => s.type === 'slot').length > 0) {
+                    const currentAnswer = answerSlots.map(s => s.char).join('');
                     if (currentAnswer === levelData.answer) {
                         if (levelData.id === 100) { playSound('seasonWin'); } else { playSound('win'); }
                         setTimeout(() => setIsVictory(true), 300);
@@ -340,7 +329,7 @@
                         setIsWrong(true);
                     }
                 }
-            }, [answerWords]);
+            }, [answerSlots]);
 
             const handleNextLevel = () => {
                 const nextLevel = OFFLINE_DB.find(l => l.id === currentLevelId + 1);
@@ -496,22 +485,33 @@
                             <img src={`./images/level${levelData.id}.jpg`} className="w-full h-full object-cover" alt="Quiz" />
                         </div>
 
-                        {/* GIẢI PHÁP MỚI: DÙNG FLEX ĐỂ CĂN GIỮA TOÀN BỘ KHỐI TỪ VÀ ÉP WRAP */}
+                        {/* HIỂN THỊ KHAY ĐÁP ÁN THEO THUẬT TOÁN ĐÃ ĐƯỢC CHỈNH SỬA - TRẢ VỀ CẤU TRÚC 1 CHIỀU ĐỂ FIX LỖI NHẬP */}
                         <div className={`w-full flex justify-center mt-2 ${isWrong ? 'animate-shake' : ''}`}>
-                            <div className="flex flex-wrap justify-center gap-x-3 gap-y-4 max-w-full px-2">
-                                {answerWords.map((word, wordIndex) => (
-                                    <div key={`word-${wordIndex}`} className="flex gap-1">
-                                        {word.map((slotItem, charIndex) => (
-                                            <button 
-                                                key={`slot-${wordIndex}-${charIndex}`} 
-                                                onClick={() => handleSlotClick(wordIndex, charIndex)}
-                                                className={`slot-base ${slotItem.char ? 'slot-filled' : 'slot-waiting'}`} 
-                                            >
-                                                {slotItem.char ? slotItem.char : ''}
-                                            </button>
-                                        ))}
-                                    </div>
-                                ))}
+                            <div className="flex flex-wrap justify-center gap-y-3 px-2 w-full max-w-[100%]">
+                                {/* Ở đây ta tách lại thành các khối từ (word blocks) chỉ để hiển thị css cho đẹp, không ảnh hưởng logic */}
+                                {levelData.answer.split(' ').map((wordStr, wordIdx) => {
+                                    // Tìm startIndex của từ này trong mảng slots gốc
+                                    let startIndex = 0;
+                                    for(let i=0; i<wordIdx; i++) startIndex += levelData.answer.split(' ')[i].length + 1; // +1 cho dấu cách
+                                    
+                                    return (
+                                        <div key={`wordbox-${wordIdx}`} className="flex gap-1 mx-2">
+                                            {wordStr.split('').map((char, charIdx) => {
+                                                const slotIndex = startIndex + charIdx;
+                                                const slotData = answerSlots[slotIndex];
+                                                if (!slotData) return null; // An toàn
+                                                return (
+                                                    <button 
+                                                        key={`slot-${slotIndex}`} onClick={() => handleSlotClick(slotIndex)}
+                                                        className={`slot-base ${slotData.char ? 'slot-filled' : 'slot-waiting'}`} 
+                                                    >
+                                                        {slotData.char ? slotData.char : ''}
+                                                    </button>
+                                                )
+                                            })}
+                                        </div>
+                                    )
+                                })}
                             </div>
                         </div>
                     </div>
