@@ -19,13 +19,16 @@
         
         body { background-color: #09090b; color: white; font-family: 'Montserrat', sans-serif; touch-action: manipulation; margin: 0; overflow: hidden; background-image: radial-gradient(circle at 50% 0%, #18181b 0%, #000000 100%); }
         html, body, #root { height: 100%; overflow: hidden; }
-        ::-webkit-scrollbar { display: none; }
+        
+        /* Tối ưu thanh cuộn cho khu vực chính */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(218, 165, 32, 0.3); border-radius: 4px; }
 
         .text-gold { background: linear-gradient(to bottom right, #facc15 0%, #eab308 50%, #ca8a04 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
         .bg-gold { background: linear-gradient(135deg, #facc15 0%, #eab308 50%, #ca8a04 100%); }
         .glass-panel { background: rgba(24, 24, 27, 0.4); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid rgba(250, 204, 21, 0.1); }
 
-        /* Kích thước ô chữ CỐ ĐỊNH, TO RÕ RÀNG */
         .slot-base { width: 44px; height: 56px; display: flex; justify-content: center; align-items: center; border-radius: 12px; font-weight: 900; font-size: 28px; transition: all 0.2s; border-bottom-width: 4px; flex-shrink: 0; }
         
         .slot-waiting { background: rgba(63, 63, 70, 0.4); border-color: #b8860b; box-shadow: inset 0 0 10px rgba(0,0,0,0.5), 0 0 10px rgba(184, 134, 11, 0.4); color: transparent; }
@@ -181,7 +184,7 @@
                 <div className="absolute inset-0 z-[100] flex items-center justify-center p-6 bg-black/80 backdrop-blur-md animate-fade">
                     <div className={`glass-panel w-full max-w-sm p-8 rounded-[32px] flex flex-col items-center border-t-4 ${borderColor} shadow-2xl scale-100`}>
                         <div className="text-5xl mb-4 drop-shadow-xl">{icon}</div>
-                        <h2 className={`text-2xl font-black mb-3 text-center uppercase tracking-widest ${titleColor}`}>{title}</h2>
+                        <h2 className={`text-xl font-black mb-3 text-center uppercase tracking-widest ${titleColor}`}>{title}</h2>
                         <p className="text-zinc-300 text-center mb-8 leading-relaxed font-medium">{message}</p>
                         
                         <div className="flex w-full gap-4">
@@ -208,9 +211,7 @@
             
             const [levelData, setLevelData] = useState(null);
             
-            // --- FIX LỖI: SỬ DỤNG MẢNG 1 CHIỀU CHO ANSWER SLOTS ---
             const [answerSlots, setAnswerSlots] = useState([]); 
-            
             const [availableLetters, setAvailableLetters] = useState([]);
             
             const [isVictory, setIsVictory] = useState(false);
@@ -256,7 +257,6 @@
             const initLevel = (lvlObj) => {
                 setLevelData(lvlObj);
                 
-                // Khởi tạo slots (Mảng 1 chiều)
                 const slots = [];
                 for (let i = 0; i < lvlObj.answer.length; i++) {
                     if (lvlObj.answer[i] === ' ') {
@@ -271,12 +271,10 @@
                 setIsVictory(false); setIsWrong(false); setHintStage(0); 
             };
 
-            // --- FIX LỖI TẠI ĐÂY: LOGIC NHẬP CHỮ ---
             const handleLetterClick = (letterObj) => {
                 if (letterObj.isUsed || isVictory) return;
                 playSound('click'); setIsWrong(false);
                 
-                // Tìm vị trí trống (slot) đầu tiên
                 const firstEmptyIndex = answerSlots.findIndex(s => s.type === 'slot' && s.char === null);
                 
                 if (firstEmptyIndex !== -1) {
@@ -440,6 +438,7 @@
                 <div className="max-w-md mx-auto h-screen bg-zinc-950 relative flex flex-col overflow-hidden">
                     <CustomAlert isOpen={alertState.isOpen} title={alertState.title} message={alertState.message} type={alertState.type} onConfirm={alertState.onConfirm} onCancel={closeAlert} showCancel={alertState.showCancel} />
                     
+                    {/* Header cố định trên cùng */}
                     <div className="flex justify-between items-center p-5 pt-8 z-10 glass-panel border-b-0 rounded-b-3xl absolute top-0 w-full">
                         <button onClick={() => setCurrentScreen('seasons')} className="p-3 bg-zinc-800 rounded-xl text-zinc-400 font-bold active:scale-90 transition-transform border border-zinc-700">❮</button>
                         
@@ -452,12 +451,14 @@
                         </div>
                     </div>
 
+                    {/* Vùng chứa ẢNH và KHAY ĐÁP ÁN - Cho phép cuộn nến nội dung quá dài */}
                     <div className="flex-1 flex flex-col items-center px-4 pt-[90px] pb-4 overflow-y-auto w-full">
                         
+                        {/* TAG GỢI Ý THÔNG MINH */}
                         <div 
                             onClick={handleHintClick}
-                            className={`w-full text-center p-2 rounded-2xl mb-4 border transition-all cursor-pointer shadow-lg active:scale-95 flex flex-col justify-center items-center min-h-[60px]
-                                ${hintStage === 0 ? 'bg-zinc-800/80 border-zinc-700 hover:border-amber-500' : 'bg-black/40 border-amber-500/50'}`}
+                            className={`w-full text-center p-2 rounded-2xl mb-4 border transition-all cursor-pointer shadow-lg flex flex-col justify-center items-center min-h-[60px] flex-shrink-0
+                                ${hintStage === 0 ? 'bg-zinc-800/80 border-zinc-700 active:scale-95' : 'bg-black/40 border-amber-500/50'}`}
                         >
                             {hintStage === 0 && (
                                 <div className="flex items-center justify-center gap-2 w-full">
@@ -469,37 +470,38 @@
                             {hintStage === 1 && (
                                 <div className="w-full flex flex-col items-center animate-[fadeIn_0.5s_ease-out]">
                                     <p className="text-white text-[14px] md:text-[15px] font-semibold leading-relaxed mb-1 px-1">{levelData.question}</p>
-                                    <span className="text-[10px] bg-amber-500/20 border border-amber-500/30 text-amber-500 px-3 py-0.5 rounded-full uppercase tracking-widest animate-pulse w-max mx-auto">💡 Dùng phao cứu sinh</span>
+                                    <span className="text-[10px] bg-amber-500/20 border border-amber-500/30 text-amber-500 px-3 py-0.5 rounded-full uppercase tracking-widest animate-pulse w-max mx-auto mt-1">💡 Mua phao cứu sinh</span>
                                 </div>
                             )}
 
                             {hintStage === 2 && (
                                 <div className="w-full flex flex-col items-center animate-[fadeIn_0.5s_ease-out]">
                                     <p className="text-white text-[13px] md:text-[14px] font-semibold leading-relaxed mb-1 text-zinc-400 px-1">{levelData.question}</p>
-                                    <p className="text-amber-500 text-[14px] md:text-[15px] font-black uppercase tracking-wider px-1">💡 PHAO: {levelData.hint}</p>
+                                    <p className="text-amber-500 text-[14px] md:text-[15px] font-black uppercase tracking-wider px-1 mt-1">💡 PHAO: {levelData.hint}</p>
                                 </div>
                             )}
                         </div>
 
+                        {/* ẢNH 3D CHÍNH */}
                         <div className="w-[85%] aspect-square rounded-[32px] overflow-hidden border-2 border-amber-600/50 mb-6 bg-black relative shadow-[0_0_30px_rgba(218,165,32,0.15)] flex-shrink-0">
                             <img src={`./images/level${levelData.id}.jpg`} className="w-full h-full object-cover" alt="Quiz" />
                         </div>
 
-                        {/* HIỂN THỊ KHAY ĐÁP ÁN THEO THUẬT TOÁN ĐÃ ĐƯỢC CHỈNH SỬA - TRẢ VỀ CẤU TRÚC 1 CHIỀU ĐỂ FIX LỖI NHẬP */}
-                        <div className={`w-full flex justify-center mt-2 ${isWrong ? 'animate-shake' : ''}`}>
-                            <div className="flex flex-wrap justify-center gap-y-3 px-2 w-full max-w-[100%]">
-                                {/* Ở đây ta tách lại thành các khối từ (word blocks) chỉ để hiển thị css cho đẹp, không ảnh hưởng logic */}
+                        {/* KHAY ĐÁP ÁN (DÙNG MẢNG PHẲNG, BỌC KHỐI ĐỂ XUỐNG DÒNG MƯỢT MÀ) */}
+                        <div className={`w-full flex justify-center mt-auto mb-2 ${isWrong ? 'animate-shake' : ''} flex-shrink-0`}>
+                            <div className="flex flex-wrap justify-center gap-y-3 px-1 max-w-[100%]">
+                                {/* Tạo các nhóm từ để trình bày */}
                                 {levelData.answer.split(' ').map((wordStr, wordIdx) => {
-                                    // Tìm startIndex của từ này trong mảng slots gốc
+                                    // Xác định vị trí (index) thực sự của ký tự đầu tiên trong từ này so với mảng answerSlots
                                     let startIndex = 0;
-                                    for(let i=0; i<wordIdx; i++) startIndex += levelData.answer.split(' ')[i].length + 1; // +1 cho dấu cách
+                                    for(let i=0; i<wordIdx; i++) startIndex += levelData.answer.split(' ')[i].length + 1; // +1 là cộng cả khoảng trắng
                                     
                                     return (
-                                        <div key={`wordbox-${wordIdx}`} className="flex gap-1 mx-2">
+                                        <div key={`wordbox-${wordIdx}`} className="flex gap-[4px] mx-2">
                                             {wordStr.split('').map((char, charIdx) => {
                                                 const slotIndex = startIndex + charIdx;
                                                 const slotData = answerSlots[slotIndex];
-                                                if (!slotData) return null; // An toàn
+                                                if (!slotData) return null; 
                                                 return (
                                                     <button 
                                                         key={`slot-${slotIndex}`} onClick={() => handleSlotClick(slotIndex)}
@@ -516,7 +518,8 @@
                         </div>
                     </div>
 
-                    <div className="glass-panel p-4 pb-8 rounded-t-[40px] border-t border-zinc-800 relative z-20">
+                    {/* BÀN PHÍM CỐ ĐỊNH Ở DƯỚI CÙNG */}
+                    <div className="glass-panel p-4 pb-8 rounded-t-[40px] border-t border-zinc-800 relative z-20 flex-shrink-0">
                         <div className="flex flex-wrap justify-center gap-1.5 md:gap-2 px-1">
                             {availableLetters.map((item) => (
                                 <button 
@@ -530,6 +533,7 @@
                         </div>
                     </div>
 
+                    {/* MODAL CHIẾN THẮNG */}
                     {isVictory && (
                         <div className="absolute inset-0 bg-black/95 flex justify-center items-center p-6 z-[90] animate-[fadeIn_0.3s_ease-out]">
                             <div className="bg-zinc-900 p-8 rounded-[40px] flex flex-col items-center border-2 border-gold w-full max-w-sm shadow-[0_0_50px_rgba(191,149,63,0.2)] relative overflow-hidden">
