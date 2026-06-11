@@ -25,7 +25,8 @@
         .bg-gold { background: linear-gradient(135deg, #facc15 0%, #eab308 50%, #ca8a04 100%); }
         .glass-panel { background: rgba(24, 24, 27, 0.4); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid rgba(250, 204, 21, 0.1); }
 
-        .slot-base { width: 44px; height: 56px; display: flex; justify-content: center; align-items: center; border-radius: 12px; font-weight: 900; font-size: 28px; transition: all 0.2s; border-bottom-width: 4px; flex-shrink: 0; }
+        /* Kích thước cơ bản của Slot, sẽ được override bằng Inline Style của React để co giãn động */
+        .slot-base { display: flex; justify-content: center; align-items: center; border-radius: 10px; font-weight: 900; transition: all 0.2s; border-bottom-width: 4px; flex-shrink: 0; }
         
         .slot-waiting { background: rgba(63, 63, 70, 0.4); border-color: #b8860b; box-shadow: inset 0 0 10px rgba(0,0,0,0.5), 0 0 10px rgba(184, 134, 11, 0.4); color: transparent; }
         .slot-filled { background: linear-gradient(to bottom, #52525b, #27272a); border-color: #ffd700; box-shadow: 0 0 15px rgba(255, 215, 0, 0.5); color: #ffd700; }
@@ -175,7 +176,6 @@
             const titleColor = isWarning ? 'text-amber-500' : 'text-red-500';
 
             return (
-                /* FIX LỖI 1: Cấp cho Modal z-index siêu cao (9999) để không bao giờ bị đè */
                 <div className="absolute inset-0 z-[9999] flex items-center justify-center p-6 bg-black/80 backdrop-blur-md animate-fade">
                     <div className={`glass-panel w-full max-w-sm p-8 rounded-[32px] flex flex-col items-center border-t-4 ${borderColor} shadow-2xl scale-100`}>
                         <div className="text-5xl mb-4 drop-shadow-xl">{icon}</div>
@@ -308,10 +308,13 @@
             const saveProgress = (newCoins, newLevelId) => { localStorage.setItem('dc_coins', newCoins); localStorage.setItem('dc_level', newLevelId); };
 
             useEffect(() => {
+                // KIỂM TRA ĐÁP ÁN: ĐÃ FIX LỖI TẠI ĐÂY (LOẠI BỎ KHOẢNG TRẮNG CỦA ĐÁP ÁN GỐC KHI SO SÁNH)
                 const isFull = answerSlots.filter(s => s.type === 'slot').every(s => s.char !== null);
                 if (isFull && answerSlots.filter(s => s.type === 'slot').length > 0) {
-                    const currentAnswer = answerSlots.map(s => s.char).join('');
-                    if (currentAnswer === levelData.answer.replace(/\s/g, '')) {
+                    const currentAnswer = answerSlots.filter(s => s.type === 'slot').map(s => s.char).join('');
+                    const targetAnswer = levelData.answer.replace(/\s/g, ''); // Bỏ khoảng trắng trong DB để so sánh
+                    
+                    if (currentAnswer === targetAnswer) {
                         if (levelData.id === 100) { playSound('seasonWin'); } else { playSound('win'); }
                         setTimeout(() => setIsVictory(true), 300);
                         const newCoins = coins + 300; 
@@ -330,25 +333,65 @@
                 else { setCurrentLevelId(currentLevelId + 1); setCurrentScreen('seasons'); }
             };
 
+            // --- THUẬT TOÁN FLEXBOX CO GIÃN ĐỘNG CHO Ô CHỮ (DYNAMIC WRAP) ---
+            // Thay vì cố định kích thước, ta cấp tỷ lệ phần trăm (%) để các ô tự động chia đều chiều ngang
+            // Tự động ngắt dòng thông minh khi số lượng từ quá dài
+            const renderAnswerSlots = () => {
+                if (!levelData) return null;
+                const words = levelData.answer.split(' '); // Tách thành các từ riêng biệt
+
+                return words.map((wordStr, wordIdx) => {
+                    // Xác định vị trí (index) thực sự trong mảng phẳng answerSlots
+                    let startIndex = 0;
+                    for(let i = 0; i < wordIdx; i++) startIndex += words[i].length + 1;
+                    
+                    return (
+                        <div key={`wordbox-${wordIdx}`} className="flex justify-center gap-1 my-1">
+                            {wordStr.split('').map((char, charIdx) => {
+                                const slotIndex = startIndex + charIdx;
+                                const slotData = answerSlots[slotIndex];
+                                if (!slotData) return null; 
+                                
+                                // Logic tính kích thước ô: 
+                                // Nếu câu ngắn (tổng chữ < 8) => Cho ô to (w-12 h-14)
+                                // Nếu câu dài => Ô nhỏ lại một chút (w-9 h-11) để không bị chật
+                                const totalLength = levelData.answer.replace(/\s/g, '').length;
+                                const sizeClass = totalLength < 8 ? "w-12 h-14 sm:w-14 sm:h-16 text-2xl sm:text-3xl" : "w-[38px] h-12 sm:w-11 sm:h-14 text-xl sm:text-2xl";
+
+                                return (
+                                    <button 
+                                        key={`slot-${slotIndex}`} onClick={() => handleSlotClick(slotIndex)}
+                                        className={`slot-base ${sizeClass} ${slotData.char ? 'slot-filled' : 'slot-waiting'}`} 
+                                    >
+                                        {slotData.char ? slotData.char : ''}
+                                    </button>
+                                )
+                            })}
+                        </div>
+                    )
+                });
+            };
+
             if (currentScreen === 'home') {
                 return (
                     <div className="max-w-md mx-auto min-h-screen flex flex-col justify-between p-6 relative">
                         <CustomAlert isOpen={alertState.isOpen} title={alertState.title} message={alertState.message} type={alertState.type} onConfirm={alertState.onConfirm} onCancel={closeAlert} showCancel={alertState.showCancel} />
                         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-64 bg-amber-500 rounded-full blur-[120px] opacity-20 pointer-events-none"></div>
                         
+                        {/* FIX SẢNH CHÍNH TỤT MOOD: Cho chữ "ĐẲNG CẤP" và "BẮT CHỮ 3D" nằm ngang hàng hoặc cân đối hơn */}
                         <div className="mt-16 z-10 flex flex-col items-center">
                             <div className="w-32 h-32 mb-6 relative shine-effect rounded-[32px] p-[2px] bg-gradient-to-br from-[#d4af37] via-[#fffacd] to-[#daa520] shadow-[0_0_40px_rgba(218,165,32,0.4)]">
                                 <div className="w-full h-full bg-[#09090b] rounded-[30px] flex items-center justify-center overflow-hidden">
                                     <img src="./images/logo.png" alt="Logo" className="w-full h-full object-cover" onError={(e) => { e.target.onerror = null; e.target.src="./images/level1.jpg"; }} />
                                 </div>
                             </div>
-                            <div className="text-center">
-                                <h1 className="text-[28px] font-black text-gold tracking-[0.3em] uppercase mb-[-5px]">Đẳng Cấp</h1>
-                                <h2 className="text-[52px] font-black text-white tracking-tighter" style={{ fontFamily: "'Playfair Display', serif" }}>
-                                    Bắt Chữ <span className="text-3xl text-gold font-sans italic ml-[-5px]">3D</span>
+                            <div className="text-center flex flex-col items-center">
+                                <h1 className="text-4xl font-black text-gold tracking-[0.2em] uppercase mb-1">Đẳng Cấp</h1>
+                                <h2 className="text-3xl font-black text-white tracking-widest" style={{ fontFamily: "'Playfair Display', serif" }}>
+                                    BẮT CHỮ <span className="text-2xl text-gold font-sans italic">3D</span>
                                 </h2>
                             </div>
-                            <div className="h-px w-24 bg-gradient-to-r from-transparent via-amber-500 to-transparent mt-4 opacity-50"></div>
+                            <div className="h-px w-32 bg-gradient-to-r from-transparent via-amber-500 to-transparent mt-5 opacity-50"></div>
                         </div>
 
                         <div className="glass-panel p-8 rounded-[32px] w-full z-10 mt-8 shadow-2xl">
@@ -430,34 +473,32 @@
             }
 
             return (
-                /* FIX LỖI 2: Xóa bỏ thuộc tính overflow-hidden ở body và cho phép flex-col scroll tự nhiên */
                 <div className="max-w-md mx-auto min-h-screen bg-zinc-950 relative flex flex-col">
                     <CustomAlert isOpen={alertState.isOpen} title={alertState.title} message={alertState.message} type={alertState.type} onConfirm={alertState.onConfirm} onCancel={closeAlert} showCancel={alertState.showCancel} />
                     
-                    {/* Header */}
-                    <div className="flex justify-between items-center p-5 pt-8 z-10 glass-panel border-b-0 rounded-b-3xl absolute top-0 left-0 right-0 max-w-md mx-auto w-full">
-                        <button onClick={() => setCurrentScreen('seasons')} className="p-3 bg-zinc-800 rounded-xl text-zinc-400 font-bold active:scale-90 transition-transform border border-zinc-700">❮</button>
+                    {/* THU GỌN HEADER LEVEL & SỐ TIỀN NHƯ YÊU CẦU */}
+                    <div className="flex justify-between items-center p-4 pt-6 z-10 glass-panel border-b-0 rounded-b-3xl absolute top-0 left-0 right-0 max-w-md mx-auto w-full shadow-lg">
+                        <button onClick={() => setCurrentScreen('seasons')} className="p-2.5 bg-zinc-800 rounded-xl text-zinc-400 font-bold active:scale-90 transition-transform border border-zinc-700">❮</button>
                         
                         <div className="text-center flex flex-col items-center flex-1">
-                            <span className="text-white text-3xl font-black tracking-wider uppercase drop-shadow-md">LEVEL <span className="text-amber-500">{currentLevelId}</span></span>
+                            <span className="text-white text-xl font-black tracking-wider uppercase drop-shadow-md">LEVEL <span className="text-amber-500">{currentLevelId}</span></span>
                         </div>
 
-                        <div className="flex items-center bg-zinc-800 px-4 py-2 rounded-full border border-amber-500/40 shadow-gold">
-                            <span className="text-amber-400 font-bold mr-2 text-lg">{coins}</span><span className="text-amber-500">🪙</span>
+                        <div className="flex items-center bg-zinc-800 px-3 py-1.5 rounded-full border border-amber-500/40 shadow-gold">
+                            <span className="text-amber-400 font-bold mr-1.5 text-sm">{coins}</span><span className="text-amber-500 text-lg">🪙</span>
                         </div>
                     </div>
 
-                    {/* Vùng Content: Thêm flex-1 và margin-top để không bị header đè */}
-                    <div className="flex-1 flex flex-col items-center px-4 pt-[110px] pb-[200px] overflow-y-auto w-full">
+                    <div className="flex-1 flex flex-col items-center px-4 pt-[90px] pb-[220px] overflow-y-auto w-full">
                         
                         <div 
                             onClick={handleHintClick}
-                            className={`w-full text-center p-2 rounded-2xl mb-4 border transition-all cursor-pointer shadow-lg flex flex-col justify-center items-center min-h-[60px] flex-shrink-0
+                            className={`w-full text-center p-2 rounded-2xl mb-4 border transition-all cursor-pointer shadow-lg flex flex-col justify-center items-center min-h-[50px] flex-shrink-0
                                 ${hintStage === 0 ? 'bg-zinc-800/80 border-zinc-700 active:scale-95' : 'bg-black/40 border-amber-500/50'}`}
                         >
                             {hintStage === 0 && (
                                 <div className="flex items-center justify-center gap-2 w-full">
-                                    <span className="text-amber-500 text-sm font-bold tracking-[0.2em] uppercase whitespace-nowrap overflow-hidden text-ellipsis max-w-[50%]"># {levelData.topic}</span>
+                                    <span className="text-amber-500 text-sm font-bold tracking-[0.2em] uppercase whitespace-nowrap overflow-hidden text-ellipsis max-w-[60%]"># {levelData.topic}</span>
                                     <span className="text-[10px] md:text-xs bg-zinc-700 text-zinc-300 px-2 py-1 rounded-full whitespace-nowrap">❓ Mở Câu Hỏi</span>
                                 </div>
                             )}
@@ -477,48 +518,26 @@
                             )}
                         </div>
 
-                        {/* Ảnh 3D */}
-                        <div className="w-[85%] aspect-square rounded-[32px] overflow-hidden border-2 border-amber-600/50 mb-6 bg-black relative shadow-[0_0_30px_rgba(218,165,32,0.15)] flex-shrink-0">
+                        <div className="w-[80%] max-w-[320px] aspect-square rounded-[32px] overflow-hidden border-2 border-amber-600/50 mb-6 bg-black relative shadow-[0_0_30px_rgba(218,165,32,0.15)] flex-shrink-0">
                             <img src={`./images/level${levelData.id}.jpg`} className="w-full h-full object-cover" alt="Quiz" />
                         </div>
 
-                        {/* Khay đáp án */}
+                        {/* HIỂN THỊ KHAY ĐÁP ÁN: SỬ DỤNG FLEXBOX FLEX-WRAP ĐỂ TỰ ĐỘNG XUỐNG DÒNG RẤT MƯỢT */}
                         <div className={`w-full flex justify-center mt-auto mb-2 ${isWrong ? 'animate-shake' : ''} flex-shrink-0`}>
-                            <div className="flex flex-wrap justify-center gap-y-3 px-1 max-w-[100%]">
-                                {levelData.answer.split(' ').map((wordStr, wordIdx) => {
-                                    let startIndex = 0;
-                                    for(let i=0; i<wordIdx; i++) startIndex += levelData.answer.split(' ')[i].length + 1;
-                                    
-                                    return (
-                                        <div key={`wordbox-${wordIdx}`} className="flex gap-[4px] mx-2">
-                                            {wordStr.split('').map((char, charIdx) => {
-                                                const slotIndex = startIndex + charIdx;
-                                                const slotData = answerSlots[slotIndex];
-                                                if (!slotData) return null; 
-                                                return (
-                                                    <button 
-                                                        key={`slot-${slotIndex}`} onClick={() => handleSlotClick(slotIndex)}
-                                                        className={`slot-base ${slotData.char ? 'slot-filled' : 'slot-waiting'}`} 
-                                                    >
-                                                        {slotData.char ? slotData.char : ''}
-                                                    </button>
-                                                )
-                                            })}
-                                        </div>
-                                    )
-                                })}
+                            <div className="flex flex-wrap justify-center gap-x-3 gap-y-3 px-1 w-full max-w-[100%]">
+                                {renderAnswerSlots()}
                             </div>
                         </div>
                     </div>
 
-                    {/* FIX LỖI 3: Khu vực bàn phím CỐ ĐỊNH HOÀN TOÀN BÊN DƯỚI (Fixed Bottom), không bị trượt theo nội dung và z-index cực cao để bắt cảm ứng */}
-                    <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md glass-panel p-4 pb-8 rounded-t-[40px] border-t border-zinc-800 z-[50]">
+                    {/* BÀN PHÍM */}
+                    <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md glass-panel p-4 pb-8 rounded-t-[40px] border-t border-zinc-800 z-[50] shadow-[0_-10px_40px_rgba(0,0,0,0.5)]">
                         <div className="flex flex-wrap justify-center gap-1.5 md:gap-2 px-1">
                             {availableLetters.map((item) => (
                                 <button 
                                     key={item.id} onClick={() => handleLetterClick(item)} disabled={item.isUsed}
-                                    className={`w-[calc(100%/7-0.4rem)] md:w-[calc(100%/7-0.75rem)] aspect-square max-h-[56px] rounded-[16px] flex justify-center items-center font-black text-[22px] transition-all duration-150 
-                                        ${item.isUsed ? 'bg-zinc-950 opacity-10 border-0 text-transparent' : 'bg-zinc-800 border-b-[5px] border-black text-white active:translate-y-1 active:border-b-0 shadow-lg hover:bg-zinc-700'}`}
+                                    className={`w-[calc(100%/7-0.4rem)] md:w-[calc(100%/7-0.75rem)] aspect-square max-h-[56px] rounded-[14px] flex justify-center items-center font-black text-[20px] md:text-[22px] transition-all duration-150 
+                                        ${item.isUsed ? 'bg-zinc-950 opacity-10 border-0 text-transparent' : 'bg-zinc-800 border-b-[4px] border-black text-white active:translate-y-1 active:border-b-0 shadow-lg hover:bg-zinc-700'}`}
                                 >
                                     {item.char}
                                 </button>
